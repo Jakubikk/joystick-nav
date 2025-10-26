@@ -27,11 +27,51 @@ Developed by Decart AI, this Unity application demonstrates real-time AI-powered
 
 ## ✨ Features
 
+### Core Technology
 - 🎥 **Real-time Camera Capture** - Direct access to Quest 3 passthrough cameras
-- 🤖 **Dual AI Models** - Mirage (61 world transformations) and Lucy (15 person transformations) with unlimited custom voice descriptions
+- 🤖 **Dual AI Models** - Mirage (world transformations) and Lucy (person transformations) with unlimited custom descriptions
 - ⚡ **Ultra-low Latency** - ~150-200ms end-to-end processing time
 - 🌐 **WebRTC Streaming** - Efficient VP8 video encoding at 30fps
 - 📱 **VR-Optimized UI** - Native Quest interface with live preview and processed video display
+
+### 🎮 Interactive Features (NEW!)
+
+#### 🕐 Time Travel
+Transform your environment to different time periods with a simple slider:
+- **Range**: 1800s to 2100+
+- **Eras**: Victorian, Mid-Century Modern, Retro 80s, Modern, Futuristic
+- **Control**: Joystick left/right to adjust year, trigger to apply
+
+#### 👔 Virtual Clothing Try-On
+Stand in front of a mirror and try on any outfit instantly:
+- **20+ Clothing Options**: Formal wear, casual, cultural, costumes, sports, historical
+- **Categories**: Business suits, traditional garments, fantasy outfits, professional uniforms
+- **Best Results**: Stand in front of mirror, face camera directly
+
+#### 🌍 Biome & Location Transformation
+See your room as if it's in a different place or natural environment:
+- **24+ Locations**: Tokyo, Paris, NYC, Venice, Dubai, Ancient Egypt, Medieval Castle
+- **Natural Biomes**: Tropical Rainforest, Arctic Tundra, Desert, Enchanted Forest
+- **Fantasy Worlds**: Crystal Cave, Floating Islands, Space Station, Alien Planet
+
+#### 🎮 Video Game Worlds
+Transform your environment to look like popular video games:
+- **30+ Game Styles**: Minecraft, LEGO, Anime, Studio Ghibli, Cyberpunk 2077
+- **Categories**: Blocky/Voxel, Fantasy RPG, Retro Pixel Art, Horror, Artistic
+- **Examples**: Zelda, Dark Souls, GTA, Silent Hill, Borderlands, Journey
+
+#### ✍️ Custom Prompt
+Type anything you can imagine using the Meta Quest keyboard:
+- **Unlimited Possibilities**: Create your own transformations
+- **Recent History**: Access your last 5 custom prompts
+- **Examples**: "Magical forest with glowing mushrooms", "Everything made of candy"
+
+### 🎛️ Intuitive Navigation
+- **Joystick Up/Down**: Navigate through menus
+- **Right Trigger**: Confirm selection / Apply transformation
+- **Left Trigger**: Go back to previous menu
+- **Hamburger Button**: Show/Hide menu for unobstructed view
+- **No other button bindings** - Simple and clean controls!
 
 ## 🚀 Quick Start
 
@@ -47,10 +87,14 @@ This project showcases Decart's real-time video-to-video AI transformation syste
 
 ### Installation
 
+**📖 For Complete Beginners**: See our detailed step-by-step guide at [`Documentation/COMPLETE_BEGINNERS_GUIDE.md`](Documentation/COMPLETE_BEGINNERS_GUIDE.md)
+
+**Quick Installation** (for experienced Unity developers):
+
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/DecartAI/Decart-XR.git
-   cd Decart-XR/DecartAI-Quest-Unity
+   git clone https://github.com/Jakubikk/joystick-nav.git
+   cd joystick-nav/DecartAI-Quest-Unity
    ```
 
 2. **Open in Unity**
@@ -167,15 +211,34 @@ Quest Camera → Unity WebRTC → Decart AI → Processed Video → Quest Displa
 
 ## 📖 Documentation
 
-For detailed technical documentation, see the Wiki
+### User Guides
+- **[Complete Beginner's Guide](Documentation/COMPLETE_BEGINNERS_GUIDE.md)** - Step-by-step from clone to production (for Unity beginners)
+- **[Quick Reference](Documentation/QUICK_REFERENCE.md)** - Controls, features, and troubleshooting at a glance
+- **[Feature Implementation](Documentation/FEATURE_IMPLEMENTATION.md)** - Technical details for developers
+
+### Getting Started
+1. **New to Unity?** Start with [Complete Beginner's Guide](Documentation/COMPLETE_BEGINNERS_GUIDE.md)
+2. **Experienced Developer?** Use Quick Start above, refer to [Quick Reference](Documentation/QUICK_REFERENCE.md)
+3. **Want to Modify?** See [Feature Implementation](Documentation/FEATURE_IMPLEMENTATION.md) for architecture details
+
+For additional technical documentation, see the project Wiki
 
 ## 🛠️ Development
 
 ### Key Components
 
+**Feature Controllers** (NEW!):
+- `MenuManager.cs` - Main menu navigation system with joystick controls
+- `TimeTravelController.cs` - Time period transformation feature
+- `ClothingTryOnController.cs` - Virtual clothing try-on feature  
+- `BiomeTransformController.cs` - Environment/location transformation
+- `GameWorldController.cs` - Video game aesthetic transformations
+- `CustomPromptController.cs` - User text input with Quest keyboard
+
+**Core WebRTC Components**:
 - `WebRTCController.cs` - Main application controller and UI management
 - `WebRTCConnection.cs` - Unity WebRTC lifecycle, video streaming, and model selection
-- `WebRTCManager.cs` - Core WebRTC logic with dual AI prompt libraries (61 Mirage + 15 Lucy)
+- `WebRTCManager.cs` - Core WebRTC logic and AI prompt handling
 - `WebCamTextureManager.cs` - Quest camera integration via Unity API
 - `PassthroughCameraUtils.cs` - Android Camera2 API integration
 - `PassthroughCameraPermissions.cs` - Runtime permission management
