@@ -22,9 +22,12 @@ namespace QuestCameraKit.Menu
         [SerializeField] private GameObject videoGamePanel;
         [SerializeField] private GameObject customPromptPanel;
         
-        [Header("Time Travel")]
-        [SerializeField] private Slider timeTravelSlider;
-        [SerializeField] private TMP_Text yearText;
+        [Header("Helper Components")]
+        [SerializeField] private TimeTravelSliderController timeTravelController;
+        [SerializeField] private OptionListDisplay clothingListDisplay;
+        [SerializeField] private OptionListDisplay biomeListDisplay;
+        [SerializeField] private OptionListDisplay videoGameListDisplay;
+        [SerializeField] private ControlsDisplay controlsDisplay;
         
         [Header("Navigation")]
         [SerializeField] private int currentMenuIndex = 0;
@@ -77,18 +80,59 @@ namespace QuestCameraKit.Menu
             if (videoGamePanel) videoGamePanel.SetActive(false);
             if (customPromptPanel) customPromptPanel.SetActive(false);
             
-            // Setup time travel slider
-            if (timeTravelSlider != null)
-            {
-                timeTravelSlider.minValue = 1800;
-                timeTravelSlider.maxValue = 2200;
-                timeTravelSlider.value = 2024;
-                timeTravelSlider.onValueChanged.AddListener(OnTimeTravelSliderChanged);
-            }
+            // Initialize helper components
+            InitializeClothingOptions();
+            InitializeBiomeOptions();
+            InitializeVideoGameOptions();
             
             currentState = MenuState.MainMenu;
             currentMenuIndex = 0;
             menuVisible = true;
+            
+            // Update controls display
+            if (controlsDisplay != null)
+            {
+                controlsDisplay.UpdateInstructions(MenuContext.MainMenu);
+            }
+        }
+        
+        private void InitializeClothingOptions()
+        {
+            if (clothingListDisplay == null) return;
+            
+            var options = new List<OptionData>();
+            foreach (var clothing in GetClothingOptions())
+            {
+                options.Add(new OptionData(clothing.name, clothing.prompt));
+            }
+            clothingListDisplay.SetOptions(options, "Virtual Mirror - Try On Clothing");
+            clothingListDisplay.SetActive(false);
+        }
+        
+        private void InitializeBiomeOptions()
+        {
+            if (biomeListDisplay == null) return;
+            
+            var options = new List<OptionData>();
+            foreach (var biome in GetBiomeOptions())
+            {
+                options.Add(new OptionData(biome.name, biome.prompt));
+            }
+            biomeListDisplay.SetOptions(options, "Biome Transformation");
+            biomeListDisplay.SetActive(false);
+        }
+        
+        private void InitializeVideoGameOptions()
+        {
+            if (videoGameListDisplay == null) return;
+            
+            var options = new List<OptionData>();
+            foreach (var game in GetVideoGameOptions())
+            {
+                options.Add(new OptionData(game.name, game.prompt));
+            }
+            videoGameListDisplay.SetOptions(options, "Video Game Styles");
+            videoGameListDisplay.SetActive(false);
         }
         
         private void Update()
@@ -180,16 +224,13 @@ namespace QuestCameraKit.Menu
                     UpdateMenuDisplay();
                     break;
                 case MenuState.Clothing:
-                    currentClothingIndex = Mathf.Max(0, currentClothingIndex - 1);
-                    UpdateClothingDisplay();
+                    if (clothingListDisplay != null) clothingListDisplay.NavigatePrevious();
                     break;
                 case MenuState.Biome:
-                    currentBiomeIndex = Mathf.Max(0, currentBiomeIndex - 1);
-                    UpdateBiomeDisplay();
+                    if (biomeListDisplay != null) biomeListDisplay.NavigatePrevious();
                     break;
                 case MenuState.VideoGame:
-                    currentVideoGameIndex = Mathf.Max(0, currentVideoGameIndex - 1);
-                    UpdateVideoGameDisplay();
+                    if (videoGameListDisplay != null) videoGameListDisplay.NavigatePrevious();
                     break;
             }
         }
@@ -204,55 +245,46 @@ namespace QuestCameraKit.Menu
                     UpdateMenuDisplay();
                     break;
                 case MenuState.Clothing:
-                    currentClothingIndex = Mathf.Min(GetClothingOptions().Count - 1, currentClothingIndex + 1);
-                    UpdateClothingDisplay();
+                    if (clothingListDisplay != null) clothingListDisplay.NavigateNext();
                     break;
                 case MenuState.Biome:
-                    currentBiomeIndex = Mathf.Min(GetBiomeOptions().Count - 1, currentBiomeIndex + 1);
-                    UpdateBiomeDisplay();
+                    if (biomeListDisplay != null) biomeListDisplay.NavigateNext();
                     break;
                 case MenuState.VideoGame:
-                    currentVideoGameIndex = Mathf.Min(GetVideoGameOptions().Count - 1, currentVideoGameIndex + 1);
-                    UpdateVideoGameDisplay();
+                    if (videoGameListDisplay != null) videoGameListDisplay.NavigateNext();
                     break;
             }
         }
         
         private void NavigateLeft()
         {
-            if (currentState == MenuState.Clothing)
+            if (currentState == MenuState.Clothing && clothingListDisplay != null)
             {
-                currentClothingIndex = Mathf.Max(0, currentClothingIndex - 1);
-                UpdateClothingDisplay();
+                clothingListDisplay.NavigatePrevious();
             }
-            else if (currentState == MenuState.Biome)
+            else if (currentState == MenuState.Biome && biomeListDisplay != null)
             {
-                currentBiomeIndex = Mathf.Max(0, currentBiomeIndex - 1);
-                UpdateBiomeDisplay();
+                biomeListDisplay.NavigatePrevious();
             }
-            else if (currentState == MenuState.VideoGame)
+            else if (currentState == MenuState.VideoGame && videoGameListDisplay != null)
             {
-                currentVideoGameIndex = Mathf.Max(0, currentVideoGameIndex - 1);
-                UpdateVideoGameDisplay();
+                videoGameListDisplay.NavigatePrevious();
             }
         }
         
         private void NavigateRight()
         {
-            if (currentState == MenuState.Clothing)
+            if (currentState == MenuState.Clothing && clothingListDisplay != null)
             {
-                currentClothingIndex = Mathf.Min(GetClothingOptions().Count - 1, currentClothingIndex + 1);
-                UpdateClothingDisplay();
+                clothingListDisplay.NavigateNext();
             }
-            else if (currentState == MenuState.Biome)
+            else if (currentState == MenuState.Biome && biomeListDisplay != null)
             {
-                currentBiomeIndex = Mathf.Min(GetBiomeOptions().Count - 1, currentBiomeIndex + 1);
-                UpdateBiomeDisplay();
+                biomeListDisplay.NavigateNext();
             }
-            else if (currentState == MenuState.VideoGame)
+            else if (currentState == MenuState.VideoGame && videoGameListDisplay != null)
             {
-                currentVideoGameIndex = Mathf.Min(GetVideoGameOptions().Count - 1, currentVideoGameIndex + 1);
-                UpdateVideoGameDisplay();
+                videoGameListDisplay.NavigateNext();
             }
         }
         
@@ -313,33 +345,47 @@ namespace QuestCameraKit.Menu
                 case 0: // Time Travel
                     currentState = MenuState.TimeTravel;
                     if (timeTravelPanel) timeTravelPanel.SetActive(true);
-                    UpdateTimeTravelDisplay();
+                    if (timeTravelController != null) timeTravelController.SetActive(true);
+                    if (controlsDisplay != null) controlsDisplay.UpdateInstructions(MenuContext.TimeTravel);
                     break;
                     
                 case 1: // Virtual Mirror/Clothing
                     currentState = MenuState.Clothing;
                     if (clothingPanel) clothingPanel.SetActive(true);
-                    currentClothingIndex = 0;
-                    UpdateClothingDisplay();
+                    if (clothingListDisplay != null)
+                    {
+                        clothingListDisplay.SetActive(true);
+                        clothingListDisplay.SetIndex(0);
+                    }
+                    if (controlsDisplay != null) controlsDisplay.UpdateInstructions(MenuContext.ClothingList);
                     break;
                     
                 case 2: // Biome/Environment
                     currentState = MenuState.Biome;
                     if (biomePanel) biomePanel.SetActive(true);
-                    currentBiomeIndex = 0;
-                    UpdateBiomeDisplay();
+                    if (biomeListDisplay != null)
+                    {
+                        biomeListDisplay.SetActive(true);
+                        biomeListDisplay.SetIndex(0);
+                    }
+                    if (controlsDisplay != null) controlsDisplay.UpdateInstructions(MenuContext.BiomeList);
                     break;
                     
                 case 3: // Video Game
                     currentState = MenuState.VideoGame;
                     if (videoGamePanel) videoGamePanel.SetActive(true);
-                    currentVideoGameIndex = 0;
-                    UpdateVideoGameDisplay();
+                    if (videoGameListDisplay != null)
+                    {
+                        videoGameListDisplay.SetActive(true);
+                        videoGameListDisplay.SetIndex(0);
+                    }
+                    if (controlsDisplay != null) controlsDisplay.UpdateInstructions(MenuContext.VideoGameList);
                     break;
                     
                 case 4: // Custom Prompt
                     currentState = MenuState.CustomPrompt;
                     if (customPromptPanel) customPromptPanel.SetActive(true);
+                    if (controlsDisplay != null) controlsDisplay.UpdateInstructions(MenuContext.CustomPrompt);
                     break;
             }
         }
@@ -358,27 +404,11 @@ namespace QuestCameraKit.Menu
         }
         
         // Time Travel Methods
-        private void OnTimeTravelSliderChanged(float value)
-        {
-            if (yearText != null)
-            {
-                yearText.text = Mathf.RoundToInt(value).ToString();
-            }
-        }
-        
-        private void UpdateTimeTravelDisplay()
-        {
-            if (yearText != null && timeTravelSlider != null)
-            {
-                yearText.text = Mathf.RoundToInt(timeTravelSlider.value).ToString();
-            }
-        }
-        
         private void ApplyTimeTravelYear()
         {
-            if (timeTravelSlider == null || webRTCController == null) return;
+            if (timeTravelController == null || webRTCController == null) return;
             
-            int year = Mathf.RoundToInt(timeTravelSlider.value);
+            int year = timeTravelController.GetCurrentYear();
             string prompt = GenerateTimeTravelPrompt(year);
             
             Debug.Log($"Applying Time Travel to year: {year}");
@@ -436,21 +466,15 @@ namespace QuestCameraKit.Menu
             };
         }
         
-        private void UpdateClothingDisplay()
-        {
-            // This would update the UI to show the current clothing option
-            // Implementation depends on your UI setup
-        }
-        
         private void ApplyClothingSelection()
         {
-            if (webRTCController == null) return;
+            if (webRTCController == null || clothingListDisplay == null) return;
             
-            var options = GetClothingOptions();
-            if (currentClothingIndex >= 0 && currentClothingIndex < options.Count)
+            var option = clothingListDisplay.GetCurrentOption();
+            if (option != null)
             {
-                Debug.Log($"Applying clothing: {options[currentClothingIndex].name}");
-                webRTCController.QueueCustomPrompt(options[currentClothingIndex].prompt);
+                Debug.Log($"Applying clothing: {option.name}");
+                webRTCController.QueueCustomPrompt(option.fullPrompt);
             }
         }
         
@@ -477,20 +501,15 @@ namespace QuestCameraKit.Menu
             };
         }
         
-        private void UpdateBiomeDisplay()
-        {
-            // This would update the UI to show the current biome option
-        }
-        
         private void ApplyBiomeSelection()
         {
-            if (webRTCController == null) return;
+            if (webRTCController == null || biomeListDisplay == null) return;
             
-            var options = GetBiomeOptions();
-            if (currentBiomeIndex >= 0 && currentBiomeIndex < options.Count)
+            var option = biomeListDisplay.GetCurrentOption();
+            if (option != null)
             {
-                Debug.Log($"Applying biome: {options[currentBiomeIndex].name}");
-                webRTCController.QueueCustomPrompt(options[currentBiomeIndex].prompt);
+                Debug.Log($"Applying biome: {option.name}");
+                webRTCController.QueueCustomPrompt(option.fullPrompt);
             }
         }
         
@@ -518,19 +537,16 @@ namespace QuestCameraKit.Menu
         }
         
         private void UpdateVideoGameDisplay()
-        {
-            // This would update the UI to show the current video game option
-        }
         
         private void ApplyVideoGameSelection()
         {
-            if (webRTCController == null) return;
+            if (webRTCController == null || videoGameListDisplay == null) return;
             
-            var options = GetVideoGameOptions();
-            if (currentVideoGameIndex >= 0 && currentVideoGameIndex < options.Count)
+            var option = videoGameListDisplay.GetCurrentOption();
+            if (option != null)
             {
-                Debug.Log($"Applying video game style: {options[currentVideoGameIndex].name}");
-                webRTCController.QueueCustomPrompt(options[currentVideoGameIndex].prompt);
+                Debug.Log($"Applying video game style: {option.name}");
+                webRTCController.QueueCustomPrompt(option.fullPrompt);
             }
         }
         
