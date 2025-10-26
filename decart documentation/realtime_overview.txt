@@ -1,0 +1,139 @@
+# Overview - Decart API Platform
+
+**URL:** https://docs.platform.decart.ai/models/realtime/overview
+
+---
+
+Skip to main content
+Decart API Platform home page
+Search...
+Ctrl K
+Cookbook
+Support
+Get Started
+Guides
+API Reference
+Getting started
+Overview
+Quickstart
+Authentication
+Models
+Pricing
+Examples
+Image
+Overview
+Image Generation
+Image Editing
+Video
+Overview
+Video Generation
+Video Editing
+Realtime
+Overview
+Video Restyling
+Video Editing
+Lip Syncing
+Libraries & SDKs
+JavaScript
+Python
+Swift
+Resources
+FAQ
+Terms of Service
+Privacy Policy
+Realtime
+Overview
+Copy page
+Transform and edit live video streams in realtime with AI. Our realtime video models enable both creative style transformations and precise video editing with minimal latency.
+Choose between style transformation (Mirage) for artistic effects or video editing (Lucy) for adding, changing, or removing elements in your video streams.
+​
+Available Models
+We offer two specialized realtime video models, each optimized for different use cases:
+Model	Use Case	Example Prompts	Best For
+Mirage	Style transformation	”Anime style”, “Cyberpunk city”, “Studio Ghibli animation”	Creative effects, artistic filters, visual themes
+Lucy	Video editing	”Add a dog”, “Change hair to blonde”, “Remove the car”	Object manipulation, scene editing, precise modifications
+​
+Mirage - Video Restyling
+Transform the overall visual style and aesthetic of your video stream. Perfect for creative applications, social media filters, and artistic effects.
+​
+Lucy - Video Editing
+Make specific edits to videos by adding, modifying, or removing objects and elements. Ideal for content creation, personalization, and interactive experiences.
+​
+Quick Start
+​
+Installation
+Copy
+Ask AI
+npm install @decartai/sdk
+
+​
+Basic Usage
+Video Restyling (Mirage)
+Video Editing (Lucy)
+Copy
+Ask AI
+import { createDecartClient, models } from "@decartai/sdk";
+
+// Use Mirage for style transformation
+const model = models.realtime("mirage_v2");
+
+const stream = await navigator.mediaDevices.getUserMedia({
+  video: {
+    frameRate: model.fps,
+    width: model.width,
+    height: model.height,
+  }
+});
+
+const client = createDecartClient({
+  apiKey: "your-api-key-here"
+});
+
+const realtimeClient = await client.realtime.connect(stream, {
+  model,
+  onRemoteStream: (transformedStream) => {
+    videoElement.srcObject = transformedStream;
+  },
+  initialState: {
+    prompt: { text: "Anime style", enhance: true }
+  }
+});
+
+// Change styles dynamically
+realtimeClient.setPrompt("Cyberpunk city");
+realtimeClient.setPrompt("Studio Ghibli animation");
+
+​
+Use Cases & Examples
+​
+Video Restyling with Mirage
+Perfect for creative applications and visual effects:
+Social Media Filters: “Anime style”, “Vintage film”, “Oil painting”
+Content Creation: “Studio Ghibli animation”, “Cyberpunk aesthetic”, “Watercolor art”
+Live Streaming: “Cartoon style”, “Neon synthwave”, “Impressionist painting”
+Virtual Events: “Fantasy world”, “Futuristic setting”, “Medieval theme”
+​
+Video Editing with Lucy
+Ideal for content modification and interactive experiences:
+Object Addition: “Add a dog running around”, “Add birds flying overhead”, “Add flowers in the foreground”
+Appearance Changes: “Change hair to blonde”, “Add sunglasses”, “Change shirt color to red”
+Object Removal: “Remove the car from the scene”, “Remove the tree”, “Remove background objects”
+Scene Modifications: “Replace the background with a beach”, “Add snow falling”, “Change day to night”
+​
+Getting Started
+Choose your model based on your use case:
+Video Restyling
+Transform video styles with the Mirage model. Perfect for creative effects and artistic transformations.
+Video Editing
+Edit video content with the Lucy model. Add, modify, or remove objects and elements.
+
+Was this page helpful?
+
+Yes
+No
+Video Editing
+Video Restyling
+Ctrl+I
+x
+linkedin
+Powered by Mintlify

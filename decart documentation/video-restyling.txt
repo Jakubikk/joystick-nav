@@ -1,0 +1,339 @@
+# Video Restyling - Decart API Platform
+
+**URL:** https://docs.platform.decart.ai/models/realtime/video-restyling
+
+---
+
+Skip to main content
+Decart API Platform home page
+Search...
+Ctrl K
+Cookbook
+Support
+Get Started
+Guides
+API Reference
+Getting started
+Overview
+Quickstart
+Authentication
+Models
+Pricing
+Examples
+Image
+Overview
+Image Generation
+Image Editing
+Video
+Overview
+Video Generation
+Video Editing
+Realtime
+Overview
+Video Restyling
+Video Editing
+Lip Syncing
+Libraries & SDKs
+JavaScript
+Python
+Swift
+Resources
+FAQ
+Terms of Service
+Privacy Policy
+Realtime
+Video Restyling
+Copy page
+Transform live video streams in realtime. Insert your imagination into any live video feed, turning passive viewing into active creation.
+The Video Restyling Realtime API takes a video stream and a prompt, then generates a transformed version of the video based on that prompt with minimal latency.
+​
+Model Specifications
+The model expects video input with these specifications:
+Frame Rate: 25 FPS
+Resolution: 1280x704 (16:9 aspect ratio)
+​
+Realtime API
+The realtime API uses WebRTC for low-latency video transformation. Clients establish a connection with our inference server, stream video with a prompt, and receive a transformed video stream in return.
+The connection remains active as long as the input video stream continues, allowing you to change prompts on-the-fly to modify the output video dynamically.
+​
+Installation
+Copy
+Ask AI
+npm install @decartai/sdk
+
+​
+Basic Usage
+Copy
+Ask AI
+import { createDecartClient, models } from "@decartai/sdk";
+
+const model = models.realtime("mirage_v2");
+
+// Get user's camera stream with model specifications
+const stream = await navigator.mediaDevices.getUserMedia({
+  audio: true,
+  video: {
+    frameRate: model.fps,
+    width: model.width,
+    height: model.height,
+  }
+});
+
+// Create a client
+const client = createDecartClient({
+  apiKey: "your-api-key-here"
+});
+
+// Connect and transform the video stream
+const realtimeClient = await client.realtime.connect(stream, {
+  model,
+  onRemoteStream: (transformedStream) => {
+    // Display the transformed video
+    const videoElement = document.querySelector("#video-output");
+    videoElement.srcObject = transformedStream;
+  }
+});
+
+// Change the style on the fly
+realtimeClient.setPrompt("Cyberpunk city");
+
+// Disconnect when done
+realtimeClient.disconnect();
+
+​
+Advanced Features
+​
+Dynamic Prompt Management
+Copy
+Ask AI
+// Change prompts without reconnecting
+realtimeClient.setPrompt("Studio Ghibli animation style");
+
+​
+Camera Mirroring
+Perfect for front-facing camera scenarios:
+Copy
+Ask AI
+// Enable mirror mode
+realtimeClient.setMirror(true);
+
+// Toggle based on camera type
+const isUserFacing = stream.getVideoTracks()[0].getSettings().facingMode === "user";
+realtimeClient.setMirror(isUserFacing);
+
+​
+Connection State Management
+Copy
+Ask AI
+import { createDecartClient, type DecartSDKError } from "@decartai/sdk";
+
+const realtimeClient = await client.realtime.connect(stream, {
+  model,
+  onRemoteStream: (transformedStream) => {
+    videoElement.srcObject = transformedStream;
+  }
+});
+
+// Monitor connection state
+realtimeClient.on("connectionChange", (state) => {
+  console.log(`Connection: ${state}`); // "connecting" | "connected" | "disconnected"
+  
+  if (state === "connected") {
+    document.getElementById("status").textContent = "Live";
+  } else if (state === "disconnected") {
+    document.getElementById("status").textContent = "Disconnected";
+  }
+});
+
+// Handle errors
+realtimeClient.on("error", (error: DecartSDKError) => {
+  console.error("SDK error:", error.code, error.message);
+});
+
+// Check connection synchronously
+const isConnected = realtimeClient.isConnected();
+const currentState = realtimeClient.getConnectionState();
+
+​
+Complete Example with Error Handling
+Copy
+Ask AI
+import { createDecartClient, models, type DecartSDKError } from "@decartai/sdk";
+
+async function setupVideoTransform() {
+  try {
+    const model = models.realtime("mirage_v2");
+    
+    // Get camera with optimal settings
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: {
+        frameRate: model.fps,
+        width: model.width,
+        height: model.height,
+      }
+    });
+
+    const client = createDecartClient({
+      apiKey: process.env.DECART_API_KEY
+    });
+
+    const realtimeClient = await client.realtime.connect(stream, {
+      model,
+      onRemoteStream: (transformedStream) => {
+        const videoElement = document.getElementById("output-video");
+        videoElement.srcObject = transformedStream;
+      }
+    });
+
+    // Set up event handlers
+    realtimeClient.on("connectionChange", (state) => {
+      updateUIStatus(state);
+    });
+
+    realtimeClient.on("error", (error) => {
+      console.error("Error:", error);
+      showErrorMessage(error.message);
+    });
+
+    // Style controls
+    document.getElementById("style-input").addEventListener("change", (e) => {
+      realtimeClient.setPrompt(e.target.value);
+    });
+
+    // Cleanup on page unload
+    window.addEventListener("beforeunload", () => {
+      realtimeClient.disconnect();
+    });
+
+    return realtimeClient;
+  } catch (error) {
+    console.error("Setup failed:", error);
+    throw error;
+  }
+}
+
+​
+WebSocket + WebRTC (Vanilla)
+For direct WebSocket communication without the SDK:
+Copy
+Ask AI
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Decart Video Restyling - WebRTC</title>
+</head>
+<body>
+  <!-- Local and transformed video streams -->
+  <video id="localVideo" autoplay muted playsinline width="45%"></video>
+  <video id="remoteVideo" autoplay playsinline width="45%"></video>
+  <br>
+  
+  <!-- Controls -->
+  <button id="startBtn">Start</button>
+  <input id="promptInput" placeholder="Enter style prompt...">
+  <button id="sendBtn">Send Prompt</button>
+
+  <script>
+    // WebSocket connection with API key and model
+    const ws = new WebSocket('wss://api3.decart.ai/v1/stream?api_key=YOUR_API_KEY&model=mirage');
+    let peerConnection;
+
+    // Handle server messages
+    ws.onmessage = async (event) => {
+      const message = JSON.parse(event.data);
+      
+      if (message.type === 'answer' && peerConnection) {
+        await peerConnection.setRemoteDescription({
+          type: 'answer', 
+          sdp: message.sdp
+        });
+      }
+    };
+
+    // Start WebRTC connection
+    async function startConnection() {
+      if (ws.readyState !== WebSocket.OPEN) return;
+
+      // Create peer connection
+      peerConnection = new RTCPeerConnection({
+        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+      });
+
+      // Send ICE candidates to server
+      peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+          ws.send(JSON.stringify({
+            type: 'ice-candidate',
+            candidate: event.candidate
+          }));
+        }
+      };
+
+      // Receive transformed video stream
+      peerConnection.ontrack = (event) => {
+        document.getElementById('remoteVideo').srcObject = event.streams[0];
+      };
+
+      // Get user camera with optimal settings
+      const localStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          width: { ideal: 1280 },
+          height: { ideal: 704 },
+          frameRate: { ideal: 25 }
+        },
+        audio: false
+      });
+
+      // Display local video
+      document.getElementById('localVideo').srcObject = localStream;
+      
+      // Add tracks to peer connection
+      localStream.getTracks().forEach(track => {
+        peerConnection.addTrack(track, localStream);
+      });
+
+      // Create and send offer
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+      
+      ws.send(JSON.stringify({
+        type: 'offer',
+        sdp: offer.sdp
+      }));
+    }
+
+    // Send style prompt
+    function sendPrompt() {
+      const promptInput = document.getElementById('promptInput');
+      const prompt = promptInput.value.trim();
+      
+      if (prompt && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'prompt',
+          prompt: prompt
+        }));
+      }
+    }
+
+    // Event listeners
+    document.getElementById('startBtn').onclick = startConnection;
+    document.getElementById('sendBtn').onclick = sendPrompt;
+    document.getElementById('promptInput').onkeypress = (e) => {
+      if (e.key === 'Enter') sendPrompt();
+    };
+  </script>
+</body>
+</html>
+
+
+Was this page helpful?
+
+Yes
+No
+Overview
+Video Editing
+Ctrl+I
+x
+linkedin
+Powered by Mintlify

@@ -1,0 +1,100 @@
+# Authentication - Decart API Platform
+
+**URL:** https://docs.platform.decart.ai/getting-started/authentication
+
+---
+
+Skip to main content
+Decart API Platform home page
+Search...
+Ctrl K
+Cookbook
+Support
+Get Started
+Guides
+API Reference
+Getting started
+Overview
+Quickstart
+Authentication
+Models
+Pricing
+Examples
+Image
+Overview
+Image Generation
+Image Editing
+Video
+Overview
+Video Generation
+Video Editing
+Realtime
+Overview
+Video Restyling
+Video Editing
+Lip Syncing
+Libraries & SDKs
+JavaScript
+Python
+Swift
+Resources
+FAQ
+Terms of Service
+Privacy Policy
+Getting started
+Authentication
+Copy page
+
+Secure your API requests with API keys
+
+​
+Get your API key
+1
+
+Sign up
+
+Create an account at platform.decart.ai
+2
+
+Create an API Key
+
+Navigate to API Keys and create a new API Key
+3
+
+Copy key
+
+Copy your API key
+​
+Use your API key
+Pass your API key when making requests:
+cURL
+JavaScript
+Python
+Copy
+Ask AI
+curl -X POST https://api.decart.ai/v1/generate/lucy-pro-v2v \
+  -H "X-API-KEY: $DECART_API_KEY" \
+  -F "data=@video.mp4" \
+  -F "prompt=Transform to anime style" \
+  --output transformed.mp4
+
+​
+Best practices
+Never hardcode API keys in your code. Use environment variables.
+Store keys in environment variables
+Rotate keys regularly
+Use different keys for development and production
+​
+Need help?
+Contact support →
+
+Was this page helpful?
+
+Yes
+No
+Quickstart
+Models
+Ctrl+I
+x
+linkedin
+Powered by Mintlify

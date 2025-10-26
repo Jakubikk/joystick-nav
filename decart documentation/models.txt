@@ -1,0 +1,151 @@
+# Models - Decart API Platform
+
+**URL:** https://docs.platform.decart.ai/getting-started/models
+
+---
+
+Skip to main content
+Decart API Platform home page
+Search...
+Ctrl K
+Cookbook
+Support
+Get Started
+Guides
+API Reference
+Getting started
+Overview
+Quickstart
+Authentication
+Models
+Pricing
+Examples
+Image
+Overview
+Image Generation
+Image Editing
+Video
+Overview
+Video Generation
+Video Editing
+Realtime
+Overview
+Video Restyling
+Video Editing
+Lip Syncing
+Libraries & SDKs
+JavaScript
+Python
+Swift
+Resources
+FAQ
+Terms of Service
+Privacy Policy
+Getting started
+Models
+Copy page
+
+Explore Decart’s AI models for video and image transformation
+
+Decart offers state-of-the-art AI models for realtime and batch video transformation, image generation, and editing. Our models are optimized for creative applications, delivering professional-quality results with minimal latency.
+​
+Available Models
+Lucy
+Video Transformation
+Transform any video with text prompts. Perfect for style transfer, scene editing, and creative effects.
+Lucy Edit
+Precise Video Editing
+Make targeted edits to specific elements in your videos while preserving everything else.
+Realtime
+Realtime Streaming
+Realtime video transformation via WebRTC.
+​
+Model Comparison
+Model	Use Case	Processing	Max Resolution	API Endpoint
+Lucy Pro T2V	Generate videos from text	Batch	1280×720	/v1/generate/lucy-pro-t2v
+Lucy Pro I2V	Animate images	Batch	1280×720	/v1/generate/lucy-pro-i2v
+Lucy Pro V2V	Transform and edit videos	Batch	1280×720	/v1/generate/lucy-pro-v2v
+Lucy Pro FLF2V	First-last frame video generation	Batch	1280×720	/v1/generate/lucy-pro-flf2v
+Lucy Dev I2V	Animate images (faster)	Batch	1280×720	/v1/generate/lucy-dev-i2v
+Lucy Dev V2V	Transform and edit videos (faster)	Batch	1280×720	/v1/generate/lucy-dev-v2v
+Lucy Pro T2I	Generate images from text	Batch	1280×720	/v1/generate/lucy-pro-t2i
+Lucy Pro I2I	Edit and transform images	Batch	1280×720	/v1/generate/lucy-pro-i2i
+Realtime Editing	Realtime video editing	Realtime	1280×704	WebRTC
+Realtime Restyling	Realtime video transformation	Realtime	1280×704	WebRTC
+​
+Technical Specifications
+​
+Video Requirements
+All video models accept MP4 files with these specifications:
+Format: MP4 (H.264 or VP8 codec)
+Aspect Ratio: 16:9 or 9:16
+File Size: Maximum 10MB
+​
+Model Capabilities
+Lucy
+Lucy Edit
+Realtime
+Strengths:
+Complete style transformation
+Maintains temporal consistency
+Supports complex prompts
+High-quality output
+Best for:
+Converting live-action to animation
+Applying artistic styles
+Creating visual effects
+Brand content transformation
+Example prompts:
+“Transform into Studio Ghibli animation style”
+“Convert to cyberpunk aesthetic with neon lighting”
+“Make it look like a watercolor painting”
+​
+Choosing the Right Model
+​
+Decision Matrix
+If you need to…	Use this model	Why?
+Generate video from text prompt	Lucy Pro T2V	Highest quality text-to-video
+Animate a still image	Lucy Pro I2V	Best image-to-video quality
+Transform or edit existing video	Lucy Pro V2V	Highest quality video editing
+Create video from first and last frames	Lucy Pro FLF2V	Interpolate between keyframes
+Generate an image from text	Lucy Pro T2I	Best text-to-image quality
+Edit or transform an image	Lucy Pro I2I	Precise image editing
+Process videos quickly (lower cost)	Lucy Dev I2V / V2V	Faster, cheaper alternatives
+Add effects to a live stream	Video Restyling / Editing	Realtime processing
+​
+Quick Start Examples
+Lucy Pro V2V
+Restyling Realtime
+Lucy Pro V2V Edit
+Copy
+Ask AI
+curl -X POST https://api.decart.ai/v1/generate/lucy-pro-v2v \
+  -H "X-API-KEY: $DECART_API_KEY" \
+  -F "data=@video.mp4" \
+  -F "prompt=Anime style transformation" \
+  --output result.mp4
+
+​
+Pricing
+For detailed pricing information, see the Pricing page.
+​
+Next Steps
+Quickstart Guide
+Start transforming videos in minutes
+API Reference
+Detailed API documentation
+JavaScript SDK
+Build with our JavaScript SDK
+Examples
+See what’s possible with our models
+
+Was this page helpful?
+
+Yes
+No
+Authentication
+Pricing
+Ctrl+I
+x
+linkedin
+Powered by Mintlify

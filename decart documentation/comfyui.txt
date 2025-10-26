@@ -1,0 +1,243 @@
+# Lucy Edit In ComfyUI - Decart API Platform
+
+**URL:** https://docs.platform.decart.ai/examples/comfyui
+
+---
+
+Skip to main content
+Decart API Platform home page
+Search...
+Ctrl K
+Cookbook
+Support
+Get Started
+Guides
+API Reference
+Getting started
+Overview
+Quickstart
+Authentication
+Models
+Pricing
+Examples
+Lucy Edit In ComfyUI
+Image
+Overview
+Image Generation
+Image Editing
+Video
+Overview
+Video Generation
+Video Editing
+Realtime
+Overview
+Video Restyling
+Video Editing
+Lip Syncing
+Libraries & SDKs
+JavaScript
+Python
+Swift
+Resources
+FAQ
+Terms of Service
+Privacy Policy
+Examples
+Lucy Edit In ComfyUI
+Copy page
+
+Lucy Edit ComfyUI Cookbook: Text-Guided Video Editing
+
+​
+Lucy Edit transforms videos with text prompts while preserving motion
+Lucy Edit is a video editing model that performs instruction-guided edits on videos using free-text prompts. The model supports clothing changes, character replacements, object insertions, and scene transformations while preserving the original motion and composition perfectly. This cookbook shows you how to set up and use Lucy Edit in ComfyUI for professional video editing results.
+​
+What Lucy Edit does best
+Motion preservation keeps videos smooth. Lucy Edit maintains the original motion and composition of your videos perfectly, allowing precise edits without disrupting the flow.
+Edit reliability improves over other methods. Compared to common inference time methods, Lucy Edit produces more robust and consistent edits.
+Identity conservation maintains character features. When changing clothing or accessories, the model preserves the subject’s identity and facial features.
+No masks or finetuning needed. Pure text instructions drive all edits—you don’t need to create masks or finetune models for common editing tasks.
+​
+Installation takes three steps
+​
+Step 1: Clone the repository into ComfyUI
+Navigate to your ComfyUI’s custom_nodes folder and clone the Lucy Edit repository:
+Copy
+Ask AI
+cd ComfyUI/custom_nodes
+git clone https://github.com/DecartAI/lucy-edit-comfyui.git
+
+​
+Step 2: Install Python dependencies
+Install the required Python packages:
+Copy
+Ask AI
+cd lucy-edit-comfyui
+pip install -r requirements.txt
+
+​
+Step 3: Download model weights
+Choose the right weights for your system. Download either FP16 (smaller, faster) or FP32 (full precision) weights based on your hardware capabilities:
+FP16 weights (recommended for most users): https://huggingface.co/decart-ai/Lucy-Edit-Dev-ComfyUI/resolve/main/lucy-edit-dev-cui-fp16.safetensors
+FP32 weights (for maximum precision): https://huggingface.co/decart-ai/Lucy-Edit-Dev-ComfyUI/resolve/main/lucy-edit-dev-cui.safetensors
+Place the downloaded weights in: ComfyUI/models/diffusion_models/
+​
+Two ways to run Lucy Edit
+​
+Option 1: Lucy Edit Pro uses the API for faster processing
+API processing offloads computation. Lucy Edit Pro runs on Decart’s servers, requiring no local GPU resources.
+Load the workflow from examples/basic-api-lucy-edit.json
+Get an API key from https://platform.decart.ai/
+Enter your API key in the workflow node
+Upload your video and enter your edit prompt
+Run the workflow to process your edit
+​
+Option 2: Lucy Edit Dev runs entirely on your machine
+Local processing gives you full control. Lucy Edit Dev runs on your hardware, ideal for sensitive content or offline work.
+Load the workflow from examples/basic-lucy-edit-dev.json
+Ensure model weights are in the correct folder
+Upload your video and enter your edit prompt
+Run the workflow to process locally
+System requirements for local processing:
+GPU with at least 16GB VRAM (24GB recommended)
+32GB system RAM minimum
+CUDA-compatible graphics card
+​
+Six types of edits you can make
+​
+1. Clothing changes work best
+Lucy Edit excels at wardrobe swaps. The model performs clothing changes with the highest accuracy and consistency.
+Write clothing prompts with specific details:
+✅ “Change the shirt to a silk kimono with wide sleeves and cherry blossom patterns”
+❌ “Change clothes”
+Include material, fit, and style details for best results. Describe textures (silk, leather, denim), patterns (stripes, florals), and fit (loose, tight, flowing).
+​
+2. Character replacements transform subjects reliably
+Replace humans with creatures or characters. This edit type works well for transforming people into animals, monsters, or fictional characters.
+Effective character replacement prompts:
+✅ “Replace the person with a Bengal tiger, striped orange fur, muscular build, alert ears”
+✅ “Replace the woman with an anime character, large expressive eyes, blue hair, school uniform”
+❌ “Make them a tiger”
+Describe physical characteristics, textures, and distinctive features. Avoid pronouns like “him” or “her”—use “person,” “man,” or “woman” instead.
+​
+3. Object replacements maintain structure
+Swap objects while preserving size and position. Object replacement works best when the new object has similar dimensions to the original.
+Structure-preserving object swaps:
+✅ “Replace the apple with a crystal ball, clear glass, internal light refractions, palm-sized”
+✅ “Replace the coffee cup with a medieval goblet, pewter metal, ornate engravings”
+❌ “Change the apple”
+Keep replacement objects plausible in scale and context. A handheld item should replace another handheld item.
+​
+4. Color changes need precise descriptions
+Color edits show mixed reliability. Some color changes are subtle, others dramatic. Detailed descriptions improve consistency.
+Color change prompts that work:
+✅ “Change the jacket color to deep burgundy leather with matte finish”
+✅ “Change the car paint to metallic silver with mirror-like reflections”
+❌ “Make it red”
+Specify the exact shade, material properties, and finish (matte, glossy, metallic).
+​
+5. Adding objects works for wearables and props
+Added items often attach to subjects. This edit type works best for accessories, handheld items, or wearable objects.
+Successful object additions:
+✅ “Add aviator sunglasses on the person’s face, gold frames, reflective lenses”
+✅ “Add a leather backpack on the person’s shoulders, brown, worn texture”
+⚠️ “Add a floating balloon” (may attach to person instead of floating)
+Specify exactly where the object should appear and how it connects to the scene.
+​
+6. Global transformations change entire scenes
+Scene-wide changes may alter subjects. Transform backgrounds, lighting, or artistic style—but be aware this can affect character identity.
+Global transformation examples:
+✅ “Transform the sunny beach into a snowy winter scene, falling snowflakes, overcast sky”
+✅ “Transform to 2D cartoon style, bold outlines, flat colors, cel-shaded appearance”
+⚠️ May change subject appearance along with the scene
+Use global transformations when you want comprehensive scene changes. For preserving subjects while changing backgrounds, combine with specific preservation instructions.
+​
+Write prompts that get better results
+​
+Start every prompt with the right trigger word
+Trigger words tell the model your intent. Beginning with the correct trigger word improves edit accuracy:
+“Change” → Clothing or color modifications
+“Add” → Adding accessories or objects
+“Replace” → Subject or object substitution
+“Transform” → Global scene or style changes
+​
+Include 20-30 descriptive words for best results
+Details improve edit precision. Short prompts like “change shirt to red” produce generic results. Rich descriptions yield professional edits.
+Compare these prompts:
+Basic: “Change shirt to kimono”
+Better: “Change the shirt to a silk kimono with deep indigo dye, wide flowing sleeves, subtle crane pattern embroidery, loose fit, soft drape, natural folds”
+​
+Describe materials, textures, and visual properties
+Concrete visual details guide the model. Include:
+Materials (silk, leather, cotton, metal)
+Textures (fuzzy, smooth, rough, glossy)
+Patterns (stripes, florals, geometric)
+Lighting (soft, harsh, dramatic)
+Scale and positioning
+Colors with modifiers (deep, pale, vibrant)
+​
+Avoid these common prompt mistakes
+Don’t mention what to preserve. The model already preserves motion and pose—mentioning it can confuse the edit.
+❌ “Change the shirt to red while preserving the pose”
+✅ “Change the shirt to bright red cotton with ribbed texture”
+Don’t use personal pronouns. Replace “me,” “him,” “her” with specific descriptors.
+❌ “Replace me with a robot”
+✅ “Replace the person with a chrome robot”
+Don’t reference specific people. Avoid mentioning hair color or identifying features.
+❌ “Change the blonde woman’s dress”
+✅ “Change the dress to emerald green silk”
+​
+Troubleshooting common issues
+​
+Edit not applying strongly enough
+Increase prompt detail. Add more descriptive words about materials, textures, and visual properties. Consider adjusting the guidance scale in your ComfyUI workflow.
+​
+Motion becoming unstable
+Use 81-frame generations. Longer clips (81 frames) produce better temporal consistency than shorter ones. Ensure your input video is properly formatted and stable.
+​
+Character identity changing unexpectedly
+Avoid global transformations for identity preservation. Use targeted edits (clothing, accessories) instead of scene-wide transforms. Add identity-preserving keywords if needed.
+​
+Processing taking too long
+Optimize your settings:
+Use FP16 weights instead of FP32
+Reduce resolution if quality allows
+Consider using the API version for faster processing
+Process shorter clips when testing prompts
+​
+Examples showcase the possibilities
+​
+Professional outfit changes
+Input: Woman in casual wear Prompt: “Change the outfit to a tailored business suit, charcoal gray wool, slim fit blazer, matching pencil skirt, white silk blouse underneath, pearl buttons” Result: Professional transformation while maintaining identity and pose
+​
+Creative character replacements
+Input: Person walking Prompt: “Replace the person with a steampunk robot, brass gears visible, copper plating, steam vents on shoulders, glowing blue eyes, mechanical joints” Result: Robotic character maintaining original walking motion
+​
+Seasonal scene transformations
+Input: Summer park scene Prompt: “Transform the scene to autumn, golden hour lighting, orange and red maple leaves falling, warm amber tones, soft shadows, crisp atmosphere” Result: Complete seasonal change with consistent motion
+​
+Additional resources and support
+Get help when you need it. Join the Decart Discord at https://discord.gg/decart for community support and updates.
+Report issues on GitHub. Submit bug reports and feature requests at https://github.com/DecartAI/lucy-edit-comfyui
+Access the technical report. Read the full technical details at https://d2drjpuinn46lb.cloudfront.net/Lucy_Edit__High_Fidelity_Text_Guided_Video_Editing.pdf
+Try the web playground. Experiment without installation at https://platform.decart.ai
+​
+Latest updates
+September 17, 2025: Initial Lucy Edit Dev weights and reference code released
+September 16, 2025: Diffusers integration merged (PR #12340)
+​
+Coming soon
+Support for Lucy Edit Dev/Image API
+Enhanced prompt optimization tools
+Batch processing capabilities
+​
+Was this page helpful?
+​
+Yes
+No
+Pricing
+Overview
+Ctrl+I
+x
+linkedin
+Powered by Mintlify

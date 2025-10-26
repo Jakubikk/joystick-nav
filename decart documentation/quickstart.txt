@@ -1,0 +1,143 @@
+# Quickstart - Decart API Platform
+
+**URL:** https://docs.platform.decart.ai/getting-started/quickstart
+
+---
+
+Skip to main content
+Decart API Platform home page
+Search...
+Ctrl K
+Cookbook
+Support
+Get Started
+Guides
+API Reference
+Getting started
+Overview
+Quickstart
+Authentication
+Models
+Pricing
+Examples
+Image
+Overview
+Image Generation
+Image Editing
+Video
+Overview
+Video Generation
+Video Editing
+Realtime
+Overview
+Video Restyling
+Video Editing
+Lip Syncing
+Libraries & SDKs
+JavaScript
+Python
+Swift
+Resources
+FAQ
+Terms of Service
+Privacy Policy
+Getting started
+Quickstart
+Copy page
+
+Transform your first video in minutes with Decart’s AI models
+
+Get started with Decart’s video transformation API in just a few steps.
+​
+Prerequisites
+A Decart account at platform.decart.ai
+An API key
+Set your API key as an environment variable to keep it secure:
+Copy
+Ask AI
+export DECART_API_KEY="your-api-key-here"
+
+Or add it to your .env file and use a package like dotenv to load it.
+​
+Quick test with our example video
+Download and transform a sample video in one command:
+Copy
+Ask AI
+# Download our example video and transform it
+curl -o example-video.mp4 -L "https://docs.platform.decart.ai/assets/example-video.mp4"
+
+curl -X POST https://api.decart.ai/v1/generate/lucy-pro-v2v \
+  -H "X-API-KEY: $DECART_API_KEY" \
+  -F "data=@example-video.mp4" \
+  -F "prompt=Turn this into anime style" \
+  --output transformed.mp4
+
+​
+Install an SDK
+JavaScript
+Python
+Copy
+Ask AI
+npm install @decartai/sdk
+
+​
+Using the SDKs
+Transform videos programmatically with our SDKs:
+JavaScript (Browser)
+JavaScript (Node.js)
+Python
+cURL
+Copy
+Ask AI
+import { createDecartClient, models } from "@decartai/sdk";
+
+const client = createDecartClient({
+  apiKey: process.env.DECART_API_KEY,
+});
+
+// Get video from file input
+const fileInput = document.querySelector('input[type="file"]');
+const file = fileInput.files[0];
+
+const result = await client.process({
+  model: models.video("lucy-pro-v2v"),
+  prompt: "Transform into Studio Ghibli animation style",
+  data: file,
+  enhance_prompt: true,
+});
+
+// Display the result
+const video = document.querySelector("video");
+video.src = URL.createObjectURL(result);
+
+The enhance_prompt: true option tells Decart to enhance your simple prompt into a more detailed description for better results.
+​
+Popular transformation styles
+Prompt	Result Style
+”Anime cartoon style”	Japanese animation aesthetic
+”Oil painting”	Classical painted artwork
+”Cyberpunk with neon lights”	Futuristic sci-fi atmosphere
+”Watercolor painting”	Soft, flowing painted look
+”Lego brick world”	Everything made of building blocks
+”Studio Ghibli animation”	Miyazaki film style
+​
+Next steps
+Live Demo
+See realtime video transformation
+All Models
+Explore our AI models
+Realtime API
+Transform video streams live
+SDKs
+JavaScript and Python libraries
+
+Was this page helpful?
+
+Yes
+No
+Overview
+Authentication
+Ctrl+I
+x
+linkedin
+Powered by Mintlify

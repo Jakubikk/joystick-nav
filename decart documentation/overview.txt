@@ -1,0 +1,107 @@
+# Overview - Decart API Platform
+
+**URL:** https://docs.platform.decart.ai/getting-started/overview
+
+---
+
+Skip to main content
+Decart API Platform home page
+Search...
+Ctrl K
+Cookbook
+Support
+Get Started
+Guides
+API Reference
+Getting started
+Overview
+Quickstart
+Authentication
+Models
+Pricing
+Examples
+Image
+Overview
+Image Generation
+Image Editing
+Video
+Overview
+Video Generation
+Video Editing
+Realtime
+Overview
+Video Restyling
+Video Editing
+Lip Syncing
+Libraries & SDKs
+JavaScript
+Python
+Swift
+Resources
+FAQ
+Terms of Service
+Privacy Policy
+Getting started
+Overview
+Copy page
+
+Transform videos and images with AI
+
+Decart provides state-of-the-art AI models for transforming videos and images through a simple API.
+​
+Quick example
+Transform any video with a single API call:
+Copy
+Ask AI
+curl -X POST https://api.decart.ai/v1/generate/lucy-pro-v2v \
+  -H "X-API-KEY: $DECART_API_KEY" \
+  -F "data=@input.mp4" \
+  -F "prompt=Transform into anime style" \
+  --output output.mp4
+
+View full code examples →
+​
+What you can build
+Style Transfer
+Transform videos into any artistic style
+Object Editing
+Replace or modify specific elements
+Realtime Effects
+Live video transformation via WebRTC
+​
+Getting started
+1
+
+Get API key
+
+Sign up at platform.decart.ai
+2
+
+Install SDK
+
+npm install @decartai/sdk or pip install decart-sdk
+3
+
+Transform
+
+Follow our quickstart guide
+​
+Explore
+Models
+Compare our AI models
+Examples
+See code examples
+API Reference
+Complete API documentation
+Pricing
+View pricing plans
+
+Was this page helpful?
+
+Yes
+No
+Quickstart
+Ctrl+I
+x
+linkedin
+Powered by Mintlify

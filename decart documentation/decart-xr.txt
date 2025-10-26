@@ -1,0 +1,501 @@
+# Decart Cookbook
+
+**URL:** https://cookbook.decart.ai/decart-xr
+
+---
+
+Decart Cookbook
+Articles
+⌘K
+Toggle theme
+"This is the ~~Oasis~~ DecartXR"
+What we Build: an AI World Transformation app
+Challenge 1: Quest Camera Access (Or: Android is Weird)
+Challenge 2: WebRTC Deep Dive (Or: The Internet is Weird Too)
+Challenge 3: Quest Development Quirks (Or: Quest is Weird As Well)
+What This Opens Up
+October 4, 2025
+DecartXR - AI ❤️ XR
+Authors
+Tom Ashdot from Decart
+Code on GitHub
+"This is the Oasis DecartXR"
+
+Ever since we launched MirageLSD one theme kept echoing through the comments — VR. “Put this on Quest”, “Anyone said Ready Player One?” and “This would be amazing on a headset!” So, we decided to make it real. We grabbed a Meta Quest 3, figured out if it’s even possible to build a camera-based app in VR (yes, in that order), and got to work.
+
+What we Build: an AI World Transformation app
+
+The concept is deceptively simple: capture live video from Quest's passthrough cameras, stream it to our AI service, apply style transformation, and display the processed result back in VR. In practice, this meant building a pipeline that looks like this:
+
+Quest Camera → Unity WebRTC → Decart AI Service → Processed Video → Quest Display
+     ↑              ↑                ↑                   ↑              ↑
+Camera Access   VP8 Encoding    Style Transfer      VP8 Decoding     UI Rendering
+& Permissions   @30fps/1-4Mbps   40ms latency        Real-time       Real-time
+
+
+Let's walk through each step of this pipeline and the components that make it work:
+
+Step 1: Quest Camera Access & Permissions
+
+The first challenge was getting access to Quest's passthrough cameras. We discovered this requires two specific components working together:
+
+PassthroughCameraPermissions.cs - Handles the Android permission dance PassthroughCameraUtils.cs - Discovers and configures Quest cameras using Android Camera2 API WebCamTextureManager.cs - Creates Unity WebCamTextures that actually work with Quest hardware
+
+We figured out that Quest cameras aren't regular webcams — they're Android Camera2 devices with Meta-specific metadata that requires special discovery logic.
+
+Step 2: Unity WebRTC Integration
+
+Once we have camera access, three core components handle the WebRTC connection to our AI service:
+
+WebRTCConnection.cs - Manages the Unity lifecycle, video streaming setup, and model selection WebRTCManager.cs - Contains the core WebRTC logic, signaling protocol, and dual AI prompt banks (61 Mirage + 15 Lucy) WebRTCController.cs - Handles user input (model selection at startup, then A/B buttons cycle through prompts) and manages video display
+
+The WebRTC stack handles VP8 encoding at 30fps with adaptive bitrate control, WebSocket signaling for peer connection setup, and ICE candidate exchange for NAT traversal.
+
+Step 3: Decart AI Service Integration
+
+This is where the real transformation happens. The WebRTCConnection component selects between two AI models:
+
+[SerializeField] private string MirageWebSocket = "wss://api3.decart.ai/v1/stream-trial?model=mirage";
+[SerializeField] private string LucyWebSocket = "wss://api3.decart.ai/v1/stream-trial?model=lucy_v2v_720p_rt";
+
+// User selects model at startup (A button = Mirage, B button = Lucy)
+string selectedEndpoint = UseLucyModel ? LucyWebSocket : MirageWebSocket;
+webRTCManager.Connect(selectedEndpoint, IsVideoAudioSender, IsVideoAudioReceiver);
+
+
+When the WebSocket opens, the system immediately sets up the WebRTC peer connection:
+
+ws.OnOpen += () => {
+    IsWebSocketConnected = true;
+    CreateNewPeerVideoAudioReceivingResources(sessionId);
+    SetupPeerConnection();
+};
+
+
+The two models serve different purposes: Mirage transforms entire environments (61 prompts like Cyberpunk, Frozen, Lego), while Lucy transforms people (15 prompts like Spiderman, Medieval Knight, Anime Character). Both are optimized for real-time VR applications with sub-200ms latency.
+
+Step 4: Processed Video Reception
+
+When AI-processed video streams back, Unity WebRTC automatically creates video receiver components. Our WebRTCController discovers these dynamically created receivers and routes them to the display system.
+
+Step 5: Quest Display & UI Rendering
+
+The final step uses Unity's Canvas system to display both the original camera feed and AI-processed video streams. The PortalController and UIFader components create smooth VR transitions and effects.
+
+The end result? You put on the headset, select your AI model (Mirage for worlds, Lucy for people), see your live camera feed immediately, then watch as AI processing kicks in within 3-5 seconds. A/B buttons cycle through the model's prompts, or you can speak custom prompts. The whole experience runs at 1280×720 resolution, 30fps, with that satisfying sub-200ms latency.
+
+Challenge 1: Quest Camera Access (Or: Android is Weird)
+
+Getting access to Quest's cameras turned out to be way more involved than "just use Unity's WebCamTexture." Quest 3 runs a modified Android called Horizon OS, and we discovered that accessing the passthrough cameras requires specific permissions and some Android Camera2 API work.
+
+First, we figured out that we need two permissions — not just one:
+
+public static readonly string[] CameraPermissions = {
+    "android.permission.CAMERA",          // Standard Android camera
+    "horizonos.permission.HEADSET_CAMERA" // Quest-specific (v74+)
+};
+
+
+Then comes camera discovery. Quest cameras aren't labeled "Left Camera" and "Right Camera" — they're just Android camera devices with Meta-specific metadata buried in their characteristics. We discovered we have to enumerate all cameras and look for special properties:
+
+// Look for Meta-specific camera metadata
+if (string.Equals(keyName, "com.meta.extra_metadata.camera_source", StringComparison.OrdinalIgnoreCase)) {
+    var cameraSourceArr = GetCameraValueByKey<sbyte[]>(cameraCharacteristics, key);
+    if (cameraSourceArr?.Length == 1)
+        cameraSource = (CameraSource)cameraSourceArr[0]; // 0 = Passthrough camera
+}
+else if (string.Equals(keyName, "com.meta.extra_metadata.position", StringComparison.OrdinalIgnoreCase)) {
+    var cameraPositionArr = GetCameraValueByKey<sbyte[]>(cameraCharacteristics, key);
+    if (cameraPositionArr?.Length == 1)
+        cameraPosition = (CameraPosition)cameraPositionArr[0]; // 0 = Left, 1 = Right
+}
+
+
+The payoff is worth it though. Once working, we get direct access to Quest's high-resolution passthrough cameras with full Unity integration.
+
+Challenge 2: WebRTC Deep Dive (Or: The Internet is Weird Too)
+
+Getting video from Unity to our AI service meant diving deep into WebRTC — a protocol that's simultaneously powerful and incredibly specific about how things need to be done. We're not just sending a video file; we're streaming live camera feed over UDP with real-time encoding, ICE negotiation for NAT traversal, and custom signaling to our AI servers.
+
+WebSocket Connection & Immediate Setup
+
+The integration starts in WebRTCManager.cs:179-231 with WebSocket creation:
+
+public async void Connect(string webSocketUrl, bool isVideoAudioSender, bool isVideoAudioReceiver) {
+    // webSocketUrl is either:
+    // "wss://api3.decart.ai/v1/stream-trial?model=mirage" or
+    // "wss://api3.decart.ai/v1/stream-trial?model=lucy_v2v_720p_rt"
+
+    ws = new WebSocket(webSocketUrl);
+    currentWebSocketUrl = webSocketUrl;
+
+    ws.OnOpen += () => {
+        SimpleWebRTCLogger.Log("WebSocket connection opened!");
+        IsWebSocketConnected = true;
+        IsWebSocketConnectionInProgress = false;
+        OnWebSocketConnection?.Invoke(WebSocketState.Open);
+
+        // Immediately set up WebRTC peer connection
+        try {
+            if (ws != null) {
+                CreateNewPeerVideoAudioReceivingResources(sessionId);
+                SetupPeerConnection();
+                SimpleWebRTCLogger.Log($"NEWPEER: Created new peerconnection {localPeerId} on peer {localPeerId}");
+            }
+        } catch (Exception e) {
+            SimpleWebRTCLogger.LogError("Error in connection setup: " + e.Message);
+        }
+    };
+}
+
+
+The API connection is streamlined - model selection is handled in the URL parameter, allowing the WebRTC peer connection to be set up immediately after the WebSocket opens. No separate initialization message is needed.
+
+WebRTC Peer Connection Creation
+
+Once the WebSocket is connected, we set up the WebRTC peer connection in WebRTCManager.cs:216-234:
+
+private void SetupPeerConnection() {
+    pc = CreateNewRTCPeerConnection();
+    SetupEventHandlers();
+}
+
+private RTCPeerConnection CreateNewRTCPeerConnection() {
+    RTCConfiguration config = new RTCConfiguration {
+        iceServers = new[] {
+            new RTCIceServer { urls = new[] { "stun:stun.l.google.com:19302" } }
+        },
+        iceCandidatePoolSize = 10 // Pre-gather candidates for faster connection
+    };
+    return new RTCPeerConnection(ref config);
+}
+
+ICE Candidate Handling
+
+The ICE candidate exchange is crucial for NAT traversal. Here's how we handle it in WebRTCManager.cs:236-248:
+
+pc.OnIceCandidate = candidate => {
+    var candidateMessage = new outboundICECandidateMessage {
+        type = "ice-candidate",
+        candidate = new ICECandidateData {
+            candidate = candidate.Candidate,
+            sdpMid = candidate.SdpMid,
+            sdpMLineIndex = candidate.SdpMLineIndex ?? 0
+        }
+    };
+    ws.SendText(JsonUtility.ToJson(candidateMessage));
+};
+
+Video Stream Creation and Encoding
+
+The real work happens when we create the video stream from our Unity camera. In WebRTCConnection.cs:328-367:
+
+private IEnumerator StartVideoTransmissionAsync() {
+    StreamingCamera.gameObject.SetActive(true); // Activate the Unity Camera
+    yield return null; // Wait for camera initialization
+    yield return null;
+
+    // Create video stream track from Unity Camera
+    if (UseImmersiveSetup) {
+        videoStreamTrack = new VideoStreamTrack(videoEquirect);
+    } else {
+        // Standard camera capture from StreamingCamera GameObject
+        videoStreamTrack = StreamingCamera.CaptureStreamTrack(VideoResolution.x, VideoResolution.y);
+    }
+
+    webRTCManager.AddVideoTrack(videoStreamTrack);
+    StartCoroutine(CreateOfferWithWarmup());
+}
+
+VP8 Encoding Configuration
+
+Here's where Unity WebRTC gets interesting. We configure VP8 encoding for optimal streaming in WebRTCConnection.cs:369-415:
+
+public IEnumerator CreateOffer() {
+    SimpleWebRTCLogger.Log("Creating offer");
+
+    // Enforce VP8 codec
+    var transceivers = webRTCManager.pc.GetTransceivers();
+    foreach (var transceiver in transceivers) {
+        if (transceiver.Sender != null && transceiver.Sender?.Track?.Kind == TrackKind.Video) {
+            var vp8 = RTCRtpSender.GetCapabilities(TrackKind.Video).codecs
+                .Where(c => c.mimeType == "video/VP8").ToArray();
+            transceiver.SetCodecPreferences(vp8);
+
+            // Manual encoding parameters and FPS control
+            var parameters = transceiver.Sender.GetParameters();
+            foreach (var encoding in parameters.encodings) {
+                encoding.maxBitrate = 4000000UL;      // 4Mbps max
+                encoding.minBitrate = 1000000UL;      // 1Mbps min
+                encoding.maxFramerate = 30U;          // 30fps
+                encoding.scaleResolutionDownBy = 1.0; // No downscaling
+            }
+            transceiver.Sender.SetParameters(parameters);
+            SimpleWebRTCLogger.Log("Set manual encoding parameters");
+        }
+    }
+
+    var offer = webRTCManager.pc.CreateOffer();
+    yield return offer;
+
+    if (!offer.IsError) {
+        var offerMessage = new outboundOfferMessage {
+            type = "offer",
+            sdp = offerSessionDesc.sdp
+        };
+        webRTCManager.ws.SendText(JsonUtility.ToJson(offerMessage));
+    }
+}
+
+Signaling Message Handling
+
+All incoming messages are processed in WebRTCManager.cs:331-401. Here's how we handle the answer:
+
+var answerMessage = JsonUtility.FromJson<inboundAnswerMessage>(data);
+if (answerMessage.type == "answer") {
+    RTCSessionDescription answerSessionDesc = new RTCSessionDescription() {
+        type = RTCSdpType.Answer,
+        sdp = answerMessage.sdp
+    };
+    pc.SetRemoteDescription(ref answerSessionDesc);
+}
+
+Received Video Frame Processing
+
+When processed video comes back from our AI service, Unity WebRTC automatically creates video receivers. We find them in WebRTCController.cs:50-64:
+
+private IEnumerator FindReceivedVideo() {
+    yield return new WaitForSeconds(0.5f); // Allow time for video receiver creation
+
+    // Search for automatically created video receivers
+    var receivingObjects = GameObject.FindObjectsByType<RawImage>(FindObjectsSortMode.None);
+    foreach (var rawImage in receivingObjects) {
+        if (rawImage.name.Contains("Receiving-RawImage") && rawImage.texture != null) {
+            Debug.Log($"Found received video: {rawImage.name}");
+            if (receivedVideoImage != null) {
+                receivedVideoImage.texture = rawImage.texture; // Display on our Canvas
+            }
+            break;
+        }
+    }
+}
+
+
+This whole dance — WebSocket signaling, WebRTC negotiation, VP8 encoding, and frame processing — happens in under 3 seconds. The streamlined connection flow with immediate peer setup makes the connection feel instantaneous.
+
+Challenge 3: Quest Development Quirks (Or: Quest is Weird As Well)
+
+Building for Quest isn't just about VR development — it's about navigating a maze of platform-specific APIs, Unity integration patterns, and hardware limitations that each have their own personality. Let's dive into what we discovered.
+
+Voice Control: The Wit.ai Integration Adventure
+
+Here's where things get really interesting. Instead of cycling through predefined styles, users can just speak what they want: "Make this look like a cyberpunk city at night" or "Transform this into a medieval castle." Sounds straightforward, right? Just add speech recognition!
+
+Well, we discovered that to get basic speech-to-text functionality, we needed to:
+
+Create a Wit.ai account (Meta's speech platform)
+Set up a new app in their console (with comprehensive configuration options)
+Configure intents and entities (which we don't even use for basic transcription)
+Generate server access tokens (multiple types, naturally)
+Integrate their Meta Voice SDK
+
+All of this... for simple speech-to-text transcription. Quite comprehensive for basic transcription, but the end result works reliably.
+
+The voice integration lives in VoiceIntentController.cs and connects their speech recognition to our WebRTC prompt system:
+
+[SerializeField] private AppVoiceExperience appVoiceExperience;  // Meta's voice solution
+[SerializeField] private WebRTCController webRTCController;      // Our WebRTC bridge
+
+private void Start() {
+    // Connect voice events to our WebRTC system (the straightforward part)
+    appVoiceExperience.VoiceEvents.OnFullTranscription.AddListener((transcription) => {
+        webRTCController.QueueCustomPrompt(transcription);  // Send the text to AI
+        fullTranscriptText.text = transcription;            // Show what we heard
+    });
+
+    // Live transcription for real-time feedback
+    appVoiceExperience.VoiceEvents.OnPartialTranscription.AddListener((transcription) => {
+        partialTranscriptText.text = transcription;         // "Look ma, I'm typing!"
+    });
+}
+
+
+Users activate this speech system by holding the Quest controller's trigger button. While holding, they see live transcription in the UI. When released, the complete transcription gets sent to our AI service as a custom prompt.
+
+Meta's Camera Security Approach
+
+Now for an interesting discovery: Meta doesn't allow access to both passthrough cameras or the full immersive video feed. We can only access one camera (left or right eye). We figured out this is their security approach — apparently, limiting access to the same camera feed that users already see in passthrough mode provides additional protection.
+
+In WebCamTextureManager.cs, we configure our single-camera setup:
+
+[SerializeField] public PassthroughCameraEye Eye = PassthroughCameraEye.Left;  // Pick your favorite
+[SerializeField] public Vector2Int RequestedResolution;  // Max resolution per camera
+
+
+This limitation drove our canvas-based display approach — different presentation than originally envisioned, but it works well for the VR experience.
+
+Unity Scene Configuration Requirements
+
+The Unity scene setup in DecartAI-Main.unity required careful orchestration. Here's the GameObject hierarchy that actually works (and we discovered is quite sensitive to changes):
+
+MainCanvas (Active)
+├─ receivedVideoImage (RawImage) - Displays AI-processed video
+├─ promptNameText (TextMeshPro) - Shows current style
+└─ ReceivingRawImagesParent - Container for auto-generated receivers
+
+WebRTC Webcam Canvas (Initially Inactive, for good reasons)
+└─ canvasRawImage (RawImage) - Local camera preview
+
+Client-StreamingCamera (Initially Inactive, because Unity timing)
+└─ Camera Component - Unity Camera for WebRTC video capture
+
+
+The WebRTCConnection component needs all these references configured in the Unity Inspector with precision:
+
+[Header("Camera Integration")]
+public Camera StreamingCamera;                    // References the Client-StreamingCamera GameObject
+public Vector2Int VideoResolution = new Vector2Int(1280, 704);  // Target resolution
+
+[Header("UI References")]
+public Transform ReceivingRawImagesParent;        // Container for dynamically created video receivers
+public Material streamMaterial;                   // Optional material for video rendering
+
+The Classic WebCamTexture Play() Timing Issue
+
+Unity has an interesting timing behavior where calling webCamTexture.Play() immediately after creation sometimes fails silently. Not "throws an error" fails — just silently fails, leaving you with a black screen and debugging confusion. Our solution in WebCamTextureManager.cs:437-438:
+
+// Important: Wait before calling Play() to avoid Unity's timing quirk
+yield return null;
+yield return new WaitForSeconds(1); // The patience solution
+webCamTexture.Play();
+
+
+Yes, we just wait a whole second. Is it elegant? No. Does it work reliably? Yes. Sometimes the simplest solutions are the least glamorous ones.
+
+Meta XR Project Setup Tools: Interesting Recommendations
+
+Here's where it gets fun. Meta provides helpful project setup tools that analyze your Unity project and give you recommendations. We discovered we have:
+
+2 "Outstanding Issues" that if we "fix," the app breaks completely
+2 "Recommended Fixes" that if we apply, surprise! The app also breaks
+
+The solution? We learned to leave the "issues" alone. They're features now.
+
+Custom Unity Player Settings Requirements
+
+Through experimentation, we discovered these specific settings that must be configured exactly right:
+
+Player Settings → Android Settings:
+
+Graphics APIs: OpenGLES3 only (remove Vulkan if present)
+Scripting Backend: IL2CPP
+Architecture: ARM64 only (ARMv7 causes issues)
+Target API Level: 34+ (Android 14)
+Minimum API Level: 29+ (Android 10)
+
+
+XR Plugin Management → Oculus:
+
+✅ Initialize XR on Startup
+❌ Low Overhead Mode (GLES) - MUST be DISABLED (counter-intuitive but necessary)
+❌ Meta Quest: Occlusion - MUST be DISABLED
+❌ Meta XR Subsampled Layout - MUST be DISABLED
+
+
+We found out that enabling those disabled options causes the camera feed to disappear into the void.
+
+The Dynamic Video Receiver Creation Pattern
+
+Unity WebRTC automatically creates RawImage GameObjects for incoming video streams, but gives them generic names. We discovered we have to search for them manually:
+
+// From WebRTCConnection.cs:464-491 - The receiver discovery pattern
+public void CreateVideoReceiverGameObject(string senderPeerId) {
+    var receivingRawImage = new GameObject().AddComponent<RawImage>();
+    receivingRawImage.name = $"{senderPeerId}-Receiving-RawImage";  // Searchable name
+    receivingRawImage.rectTransform.SetParent(ReceivingRawImagesParent, false);
+
+    // Configure RawImage layout with precision
+    receivingRawImage.rectTransform.localScale = Vector3.one;
+    receivingRawImage.rectTransform.anchorMin = Vector2.zero;
+    receivingRawImage.rectTransform.anchorMax = Vector2.one;
+
+    webRTCManager.VideoReceiver = receivingRawImage;
+}
+
+The Camera-to-WebRTC Bridge
+
+Getting the Quest camera feed into Unity's WebRTC system requires bridging multiple APIs. The flow in all its glory:
+
+// In WebRTCController.cs:19-24 - Wait for the stars to align
+private IEnumerator Start() {
+    yield return new WaitUntil(() =>
+        passthroughCameraManager.WebCamTexture != null &&
+        passthroughCameraManager.WebCamTexture.isPlaying);
+
+    _webcamTexture = passthroughCameraManager.WebCamTexture;
+    canvasRawImage.texture = _webcamTexture;  // Finally display something!
+}
+
+
+Then in WebRTCConnection.cs:347-355, we perform the bridging ceremony:
+
+// Create video stream track from Unity Camera (not directly from WebCamTexture, for reasons)
+if (UseImmersiveSetup) {
+    videoStreamTrack = new VideoStreamTrack(videoEquirect);
+} else {
+    // StreamingCamera captures the scene, including our camera texture
+    videoStreamTrack = StreamingCamera.CaptureStreamTrack(VideoResolution.x, VideoResolution.y);
+}
+
+WebRTCController Inspector Configuration
+
+The WebRTCController also needs its own set of precise Inspector assignments:
+
+[Header("Camera Integration")]
+public WebCamTextureManager passthroughCameraManager;  // The camera manager singleton
+
+[Header("UI Display Components")]
+public RawImage canvasRawImage;         // Local camera preview (fileID: 557677174)
+public RawImage receivedVideoImage;     // AI-processed video display
+public TMP_Text promptNameText;         // Current prompt display
+
+
+Miss one reference? Silent failure. Wrong reference? Silent failure. Reference something that used to exist but got renamed? You guessed it — silent failure with bonus debugging time.
+
+Why We Embraced the Canvas Approach
+
+The single-camera limitation plus Unity's WebRTC patterns plus Meta's security considerations pushed us toward a canvas-based approach:
+
+Meta's Security: Only one passthrough camera accessible (by design)
+Unity WebRTC: Works smoothly with Camera.CaptureStreamTrack() from scene cameras
+VR Display: RawImage components on World Space canvases work reliably
+Reality: Sometimes you gotta work with what you've got
+
+The result feels natural in VR — like having floating video screens that show your reality transformed by AI. It's not the full-immersion Matrix experience we dreamed of, but it's surprisingly engaging nonetheless. Plus, floating screens are easier to debug than reality-warping shaders, so there's that practical benefit.
+
+What This Opens Up
+
+The open-source release is already sparking ideas we never considered. Developers are talking about AR games where the environment transforms based on player actions, architectural visualization where you can instantly restyle spaces, and educational experiences where you can "visit" historical periods or artistic movements.
+
+The technical foundation we built — real-time Quest camera access, WebRTC streaming to AI services, and the Unity integration patterns — could power a whole new generation of VR applications. We solved the challenging problems: permissions, camera discovery, encoding optimization, network reliability, and sub-200ms latency. Now anyone can build on top of this.
+
+The possibilities are exciting: multiple camera angles, higher resolutions, audio processing integration, and maybe even real-time collaboration where multiple users can share AI-transformed spaces. All the building blocks are here, waiting for the next creative idea.
+
+We're just grinning like kids who built a rocket ship in their garage and watched it actually fly. Sometimes the best projects start with someone saying "wouldn't it be cool if..." and end with you showing everyone that yes, it really would be cool.
+
+The future of VR isn't just about better displays or higher refresh rates — it's about AI that can transform reality itself, in real-time, while you're living inside it. And honestly? We can't wait to see what you build next.
+
+The complete source code and documentation for this Quest + MirageLSD + Lucy Edit integration is available on GitHub. Ready to start building? Load up Unity, grab a Quest 3, and dive in. also, you can just download the APK and try it straight away in SideQuest
+
+Decart Cookbook
+
+Technical tutorials and guides for developers building with the Decart platform.
+
+Resources
+All Articles
+Platform
+Community
+GitHub
+Legal
+© 2025 Decart Team
+Built with Next.js and Tailwind CSS
