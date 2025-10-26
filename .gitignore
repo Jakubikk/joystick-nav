@@ -127,6 +127,8 @@ Assets/.avatar_sdk_sample_assets_importer.txt
 !README.md
 !CONTRIBUTING.md
 !CODING_STANDARDS.md
+!Documentation/*.md
+!DecartAI-Quest-Unity/Assets/Samples/DecartAI-Quest/Scripts/Menu/README.md
 
 # Environment variables and secrets
 .env
