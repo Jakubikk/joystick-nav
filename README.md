@@ -27,11 +27,20 @@ Developed by Decart AI, this Unity application demonstrates real-time AI-powered
 
 ## ✨ Features
 
+### Four Main Transformation Modes:
+- 🕰️ **Time Travel** - View your environment as it would appear in any year from 1800 to 2200 with an interactive slider
+- 👔 **Virtual Mirror / Clothing Try-On** - Stand in front of a mirror and try on 15 different clothing styles instantly
+- 🌴 **Biome Transformation** - Transform your room into 15 different environments (tropical paradise, arctic tundra, etc.)
+- 🎮 **Video Game Styles** - See your world as 15 different video games (Minecraft, LEGO, Cyberpunk, etc.)
+- ⌨️ **Custom Prompts** - Type any transformation using the built-in Meta Quest keyboard
+
+### Technical Features:
 - 🎥 **Real-time Camera Capture** - Direct access to Quest 3 passthrough cameras
-- 🤖 **Dual AI Models** - Mirage (61 world transformations) and Lucy (15 person transformations) with unlimited custom voice descriptions
+- 🤖 **AI-Powered Transformations** - Powered by Decart AI (Mirage and Lucy models)
 - ⚡ **Ultra-low Latency** - ~150-200ms end-to-end processing time
 - 🌐 **WebRTC Streaming** - Efficient VP8 video encoding at 30fps
-- 📱 **VR-Optimized UI** - Native Quest interface with live preview and processed video display
+- 🎮 **Joystick Navigation** - Intuitive menu system with joystick up/down navigation
+- 📱 **VR-Optimized UI** - Beautiful, easy-to-use menu interface
 
 ## 🚀 Quick Start
 
@@ -80,18 +89,39 @@ This project showcases Decart's real-time video-to-video AI transformation syste
 
 7. **Launch & Enjoy**
    - Grant camera permissions when prompted
-   - Select AI model: Press A for Mirage (world transformations) or B for Lucy (person transformations)
-   - Use A/B buttons to cycle through prompts or use your voice to create custom prompts by holding the Index Trigger button
+   - Use the intuitive joystick navigation system to explore features
    - See live transformation in real-time!
 
-## 🎤 Voice Control Setup
+## 🎮 Navigation Controls
 
-**Quick Setup**:
-1. Create free [wit.ai](https://wit.ai) account → Create New App
-2. Go to Management → Settings → Copy Server & Client Access Tokens
-3. Paste tokens into Unity's **customNLP asset** → Hold Index Trigger and speak custom prompts!
+The app uses a simple, intuitive joystick navigation system:
 
-**Note**: Wit.ai is used exclusively for voice-to-text conversion. No additional training or configuration of your Wit.ai app is required.
+| Control | Action |
+|---------|--------|
+| **Joystick Up/Down** | Navigate through menu options |
+| **Joystick Left/Right** | Navigate within submenus (for clothing, biomes, games) |
+| **Right Trigger** | Confirm selection / Apply transformation |
+| **Left Trigger** | Go back to previous menu |
+| **Start Button (≡)** | Show / Hide menu |
+
+**No other buttons are used** - designed for maximum simplicity!
+
+## 📖 Complete Beginner's Guide
+
+New to Unity? Never deployed to Quest before? We've got you covered!
+
+**See our comprehensive guide**: [Documentation/COMPLETE_BEGINNERS_GUIDE.md](Documentation/COMPLETE_BEGINNERS_GUIDE.md)
+
+This guide walks you through:
+- Installing all required software
+- Cloning the repository
+- Setting up Unity from scratch
+- Configuring every single setting
+- Building and deploying to your Quest 3
+- Using all features of the app
+- Troubleshooting common issues
+
+Written for absolute beginners with step-by-step instructions!
 
 ## 📦 Package Dependencies
 
@@ -173,11 +203,50 @@ For detailed technical documentation, see the Wiki
 
 ### Key Components
 
+- `MenuManager.cs` - **NEW** - Menu navigation system and feature management
+- `MenuOptionDisplay.cs` - **NEW** - UI helper for displaying menu options
 - `WebRTCController.cs` - Main application controller and UI management
 - `WebRTCConnection.cs` - Unity WebRTC lifecycle, video streaming, and model selection
-- `WebRTCManager.cs` - Core WebRTC logic with dual AI prompt libraries (61 Mirage + 15 Lucy)
+- `WebRTCManager.cs` - Core WebRTC logic with AI prompt integration
 - `WebCamTextureManager.cs` - Quest camera integration via Unity API
 - `PassthroughCameraUtils.cs` - Android Camera2 API integration
+
+### The Four Main Features
+
+#### 1. Time Travel (1800-2200)
+Transform your environment to show how it would appear in different time periods.
+- **Interactive slider** to select any year from 1800 to 2200
+- **Smart prompts** automatically generated based on era
+- Examples:
+  - 1850: "Horse-drawn carriages, gas lamps, historical architecture"
+  - 2024: "Modern vehicles, contemporary architecture"
+  - 2150: "Flying vehicles, holographic displays, futuristic cities"
+
+#### 2. Virtual Mirror / Clothing Try-On
+Stand in front of a mirror and try on 15 different clothing styles instantly.
+- **15 Clothing Options**: Business Suit, Casual Jeans, Summer Dress, Winter Coat, Athletic Wear, Formal Gown, Leather Jacket, Traditional Kimono, Medieval Armor, Space Suit, Pirate Outfit, Victorian Dress, Superhero Costume, Chef Uniform, Beach Wear
+- Uses **Lucy AI model** optimized for person transformations
+- **Preserves your identity** while changing clothing
+
+#### 3. Biome / Environment Transformation
+Transform your room into 15 different environments and climates.
+- **15 Biome Options**: Tropical Paradise, Arctic Tundra, Desert Oasis, Rainforest Jungle, Mountain Summit, Underwater Reef, Autumn Forest, Cherry Blossom Garden, Savanna Plains, Bamboo Forest, Volcanic Landscape, Meadow Flowers, Mangrove Swamp, Ice Cave, Canyon Desert
+- Uses **Mirage AI model** for complete environment transformation
+- **Maintains temporal consistency** for smooth VR experience
+
+#### 4. Video Game Styles
+See your world as if it were rendered in 15 different video game engines.
+- **15 Game Styles**: Minecraft, LEGO, Grand Theft Auto, The Legend of Zelda, Cyberpunk 2077, Animal Crossing, Mario Kart, Fortnite, Red Dead Redemption, Super Mario, Portal, Pac-Man, Sonic, Pokemon, Fallout
+- Each style faithfully recreates the visual aesthetic
+- **Real-time transformation** with game-accurate graphics
+
+#### 5. Custom Prompts
+Type any transformation you can imagine using Meta Quest's built-in keyboard.
+- Opens **native Meta Quest keyboard** interface
+- Supports complex, detailed prompts
+- Example: "Transform into a steampunk workshop with brass gears, steam vents, Victorian machinery"
+
+## 🛠️ Development
 - `PassthroughCameraPermissions.cs` - Runtime permission management
 
 ### Build Configuration
@@ -230,7 +299,6 @@ This project incorporates several open source components and proprietary SDKs. W
 - **[QuestCameraKit](https://github.com/xrdevrob/QuestCameraKit)** by [@xrdevrob](https://github.com/xrdevrob) (MIT License)
 - **[SimpleWebRTC](https://github.com/FireDragonGameStudio/SimpleWebRTC)** by [Fire Dragon Game Studio](https://github.com/FireDragonGameStudio) (MIT License)
 - **[NativeWebSocket](https://github.com/endel/NativeWebSocket)** by [@endel](https://github.com/endel) (MIT License)
-- **[Meta Voice SDK](https://developer.oculus.com/documentation/unity/voice-sdk-overview/)** (Meta License)
 - **[Decart AI](https://platform.decart.ai/)** (Proprietary Service)
 
 ### License Compatibility
