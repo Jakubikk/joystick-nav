@@ -27,47 +27,11 @@ Developed by Decart AI, this Unity application demonstrates real-time AI-powered
 
 ## ✨ Features
 
-### Core Capabilities
 - 🎥 **Real-time Camera Capture** - Direct access to Quest 3 passthrough cameras
-- 🤖 **Dual AI Models** - Mirage (world transformations) and Lucy (person transformations)
+- 🤖 **Dual AI Models** - Mirage (61 world transformations) and Lucy (15 person transformations) with unlimited custom voice descriptions
 - ⚡ **Ultra-low Latency** - ~150-200ms end-to-end processing time
 - 🌐 **WebRTC Streaming** - Efficient VP8 video encoding at 30fps
-- 📱 **VR-Optimized UI** - Native Quest interface with intuitive joystick navigation
-
-### 🆕 New Enhanced Features (v2.0)
-
-- 🕰️ **Time Travel** - View your environment across different historical eras (1000-3000 AD)
-  - 12 distinct time periods from Medieval to Distant Future
-  - Interactive year slider with real-time transformation
-  - Historically accurate visual styles for each era
-
-- 👔 **Virtual Dressing Room** - Try on different clothing styles with AI
-  - 20+ outfit options from formal wear to fantasy costumes
-  - Maintains your identity while changing appearance
-  - Includes: Business suits, superhero costumes, traditional attire, and more
-
-- 🌍 **Biome/Country Transformation** - Experience different locations worldwide
-  - 20+ locations including Paris, Tokyo, Ancient Egypt, Swiss Alps
-  - Natural biomes: Tropical rainforest, Arctic tundra, Sahara desert
-  - Immersive environmental transformations
-
-- 🎮 **Video Game Styles** - See your world through 25+ game aesthetics
-  - Popular games: Minecraft, Zelda, GTA, Cyberpunk 2077, Fortnite
-  - Accurate recreation of game art styles
-  - From retro pixel art to modern photorealistic rendering
-
-- ⌨️ **Custom Input** - Type your own creative prompts
-  - Full Meta Quest virtual keyboard integration
-  - Unlimited creative possibilities
-  - Direct AI prompt customization
-
-### 🎮 Intuitive Navigation System
-
-- **Left Joystick**: Navigate menu options (up/down)
-- **Right Trigger**: Confirm selection
-- **Left Trigger**: Go back to previous menu
-- **Start Button (≡)**: Show/Hide menu
-- No voice-to-text required - everything controllable via joystick and triggers!
+- 📱 **VR-Optimized UI** - Native Quest interface with live preview and processed video display
 
 ## 🚀 Quick Start
 
@@ -83,16 +47,10 @@ This project showcases Decart's real-time video-to-video AI transformation syste
 
 ### Installation
 
-📚 **Complete Beginner Guide**: See [`documentation/COMPLETE_BEGINNER_GUIDE.md`](documentation/COMPLETE_BEGINNER_GUIDE.md) for detailed step-by-step instructions from cloning to production deployment.
-
-📖 **Features Documentation**: See [`documentation/FEATURES_DOCUMENTATION.md`](documentation/FEATURES_DOCUMENTATION.md) for detailed information about all new features.
-
-**Quick Installation**:
-
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/Jakubikk/joystick-nav.git
-   cd joystick-nav/DecartAI-Quest-Unity
+   git clone https://github.com/DecartAI/Decart-XR.git
+   cd Decart-XR/DecartAI-Quest-Unity
    ```
 
 2. **Open in Unity**
