@@ -27,11 +27,33 @@ Developed by Decart AI, this Unity application demonstrates real-time AI-powered
 
 ## ✨ Features
 
+### Core Capabilities
 - 🎥 **Real-time Camera Capture** - Direct access to Quest 3 passthrough cameras
-- 🤖 **Dual AI Models** - Mirage (61 world transformations) and Lucy (15 person transformations) with unlimited custom voice descriptions
+- 🤖 **Dual AI Models** - Mirage (environment) and Lucy (person) transformations
 - ⚡ **Ultra-low Latency** - ~150-200ms end-to-end processing time
 - 🌐 **WebRTC Streaming** - Efficient VP8 video encoding at 30fps
-- 📱 **VR-Optimized UI** - Native Quest interface with live preview and processed video display
+- 📱 **VR-Optimized UI** - Intuitive menu system with joystick navigation
+
+### New Enhanced Features
+- 🕰️ **Time Travel** - Transform environment to any year (1800-2200)
+- 👔 **Virtual Mirror** - Try on different clothing styles with AI
+- 🌍 **Biome Transform** - View room as different countries/environments
+- 🎮 **Video Game Styles** - Transform world to match popular games
+- ⌨️ **Custom Prompts** - Type your own transformations with Meta keyboard
+
+### Navigation Controls
+- **Hamburger Button** - Show/hide menu
+- **Joystick Up/Down** - Navigate options
+- **Right Trigger** - Confirm selection
+- **Left Trigger** - Go back
+- **Joystick Left/Right** - Adjust sliders
+
+## 📚 Documentation
+
+**New to Unity or Quest development?** Start here:
+- 📖 [Complete Beginner Guide](Documentation/COMPLETE_BEGINNER_GUIDE.md) - Step-by-step setup from zero to running app
+- 🔧 [Technical Implementation](Documentation/TECHNICAL_IMPLEMENTATION.md) - Deep dive for developers
+- 🤖 [Build Automation](Documentation/build_automation.py) - Automated build script
 
 ## 🚀 Quick Start
 
