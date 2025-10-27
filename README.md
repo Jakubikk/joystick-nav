@@ -27,11 +27,41 @@ Developed by Decart AI, this Unity application demonstrates real-time AI-powered
 
 ## ✨ Features
 
+### Core Technology
 - 🎥 **Real-time Camera Capture** - Direct access to Quest 3 passthrough cameras
-- 🤖 **Dual AI Models** - Mirage (61 world transformations) and Lucy (15 person transformations) with unlimited custom voice descriptions
+- 🤖 **AI-Powered Transformations** - Using Decart's Mirage and Lucy models for real-time video processing
 - ⚡ **Ultra-low Latency** - ~150-200ms end-to-end processing time
 - 🌐 **WebRTC Streaming** - Efficient VP8 video encoding at 30fps
 - 📱 **VR-Optimized UI** - Native Quest interface with live preview and processed video display
+
+### New Interactive Features (v2.0)
+- 🕰️ **Time Travel** - Experience your environment in 15+ historical periods (1500-2500 AD)
+  - From Ancient Egypt and Medieval castles to Cyberpunk futures
+  - Smooth year slider with instant transformation
+  
+- 👔 **Virtual Try-On** - Try on 30+ clothing options in real-time
+  - Formal wear, cultural attire, costumes, and more
+  - Stand in front of camera like a mirror
+  
+- 🌍 **Biome/Country Transformation** - Transform your room into 35+ locations
+  - Natural biomes: Tropical rainforest, Arctic tundra, Coral reef
+  - Countries: Japan, Paris, Morocco, Iceland, Dubai, and more
+  - Fantasy locations: Enchanted forest, Crystal caves, Alien planets
+  
+- 🎮 **Video Game Styles** - View environment in 60+ game aesthetics
+  - Popular games: Minecraft, LEGO, Zelda, Cyberpunk 2077
+  - Classic styles: 8-bit retro, 16-bit RPG, Pac-Man
+  - Modern hits: Fortnite, Overwatch, Animal Crossing
+  
+- ⌨️ **Custom Prompts** - Enter any transformation via Meta Quest keyboard
+  - Unlimited creative possibilities
+  - Direct access to Decart AI with your imagination
+
+### Intuitive Navigation
+- 🎮 **Joystick Controls** - Simple up/down navigation through all features
+- 🔘 **Trigger-Based Actions** - Right trigger to confirm, left trigger to go back
+- 📱 **Menu Toggle** - Press Start button to show/hide menus
+- 🎯 **No Complex Controls** - Designed for ease of use
 
 ## 🚀 Quick Start
 
@@ -80,9 +110,43 @@ This project showcases Decart's real-time video-to-video AI transformation syste
 
 7. **Launch & Enjoy**
    - Grant camera permissions when prompted
-   - Select AI model: Press A for Mirage (world transformations) or B for Lucy (person transformations)
-   - Use A/B buttons to cycle through prompts or use your voice to create custom prompts by holding the Index Trigger button
+   - Navigate through the main menu using joystick up/down
+   - Select features with right trigger
+   - Explore Time Travel, Virtual Try-On, Biomes, Video Game Styles, or Custom Prompts!
    - See live transformation in real-time!
+
+## 📚 Documentation
+
+### For Beginners
+- 📖 **[Complete Beginner's Guide](Documentation/COMPLETE_BEGINNERS_GUIDE.md)** - Step-by-step guide from cloning to production
+  - Covers Unity installation, project setup, building, and deployment
+  - Troubleshooting common issues
+  - Perfect for first-time Unity users
+
+### Feature Documentation
+- 🎯 **[Features Guide](Documentation/FEATURES.md)** - Detailed documentation of all features
+  - How to use each feature
+  - Available options and transformations
+  - Tips for best results
+  - Navigation controls reference
+
+## 🎮 How to Use
+
+### Navigation Controls
+- **Joystick Up/Down** - Navigate through menu options
+- **Joystick Left/Right** - Adjust values (e.g., year slider in Time Travel)
+- **Right Trigger** - Confirm selection / Apply transformation
+- **Left Trigger** - Go back to previous menu
+- **Start Button (☰)** - Show/Hide menu
+- **A Button** - Open keyboard (in Custom Prompt feature)
+
+### Quick Feature Overview
+
+1. **Time Travel**: Select a year from 1500-2500 and see your environment transform to that era
+2. **Virtual Try-On**: Stand facing camera and browse through 30+ clothing options
+3. **Biome/Country**: Transform your room to look like Japan, Paris, rainforest, underwater, etc.
+4. **Video Game Styles**: Apply aesthetics from 60+ popular games (Minecraft, LEGO, Zelda, etc.)
+5. **Custom Prompt**: Type any transformation you can imagine using the Meta keyboard
 
 ## 🎤 Voice Control Setup
 
@@ -173,12 +237,30 @@ For detailed technical documentation, see the Wiki
 
 ### Key Components
 
+**Core System:**
 - `WebRTCController.cs` - Main application controller and UI management
 - `WebRTCConnection.cs` - Unity WebRTC lifecycle, video streaming, and model selection
-- `WebRTCManager.cs` - Core WebRTC logic with dual AI prompt libraries (61 Mirage + 15 Lucy)
+- `WebRTCManager.cs` - Core WebRTC logic with AI prompt management
 - `WebCamTextureManager.cs` - Quest camera integration via Unity API
 - `PassthroughCameraUtils.cs` - Android Camera2 API integration
 - `PassthroughCameraPermissions.cs` - Runtime permission management
+
+**Feature Controllers (New):**
+- `MenuManager.cs` - Main menu navigation and state management
+- `TimeTravelController.cs` - Time period transformations (1500-2500 AD)
+- `VirtualTryOnController.cs` - Clothing and costume try-on system
+- `BiomeController.cs` - Location and environment transformations
+- `VideoGameController.cs` - Game aesthetic transformations
+- `CustomPromptController.cs` - Free-form text input handling
+
+### Prompt Libraries
+
+Each feature contains curated prompts optimized for Decart AI:
+- **Time Travel**: 15 historical periods with detailed environmental descriptions
+- **Virtual Try-On**: 30+ clothing options across 8 categories
+- **Biome/Country**: 35+ locations including natural and cultural environments
+- **Video Game**: 60+ game styles from retro classics to modern hits
+- **Custom**: User-generated prompts via Meta Quest keyboard
 
 ### Build Configuration
 
