@@ -27,11 +27,26 @@ Developed by Decart AI, this Unity application demonstrates real-time AI-powered
 
 ## ✨ Features
 
+### Core Capabilities
 - 🎥 **Real-time Camera Capture** - Direct access to Quest 3 passthrough cameras
-- 🤖 **Dual AI Models** - Mirage (61 world transformations) and Lucy (15 person transformations) with unlimited custom voice descriptions
+- 🤖 **Dual AI Models** - Mirage (world transformations) and Lucy (person transformations)
 - ⚡ **Ultra-low Latency** - ~150-200ms end-to-end processing time
 - 🌐 **WebRTC Streaming** - Efficient VP8 video encoding at 30fps
-- 📱 **VR-Optimized UI** - Native Quest interface with live preview and processed video display
+- 🎮 **Joystick Navigation** - Intuitive menu system with Quest controllers
+
+### Transformation Modes
+- ⏰ **Time Travel** - View your environment in 12 different time periods (1800-2200)
+- 👔 **Virtual Try-On** - Try on 32+ clothing items from various categories (formal, casual, historical, fantasy, professional, cultural, sports)
+- 🌍 **Biome Transform** - Transport to 28 different locations and biomes (natural, countries, fantasy, seasonal)
+- 🎮 **Video Game Style** - See your world as 34+ iconic video games (Minecraft, LEGO, Cyberpunk, and more)
+- ✏️ **Custom Prompts** - Type any transformation using Meta Quest keyboard
+
+### Navigation Controls
+- **Left Trigger**: Go back to previous menu
+- **Right Trigger**: Confirm selection / Apply transformation
+- **Left Joystick Up/Down**: Navigate through menu options
+- **Start Button**: Show/Hide menu
+- **Right Joystick Left/Right**: Adjust sliders (Time Travel mode)
 
 ## 🚀 Quick Start
 
@@ -49,8 +64,8 @@ This project showcases Decart's real-time video-to-video AI transformation syste
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/DecartAI/Decart-XR.git
-   cd Decart-XR/DecartAI-Quest-Unity
+   git clone https://github.com/Jakubikk/joystick-nav.git
+   cd joystick-nav/DecartAI-Quest-Unity
    ```
 
 2. **Open in Unity**
@@ -80,18 +95,29 @@ This project showcases Decart's real-time video-to-video AI transformation syste
 
 7. **Launch & Enjoy**
    - Grant camera permissions when prompted
-   - Select AI model: Press A for Mirage (world transformations) or B for Lucy (person transformations)
-   - Use A/B buttons to cycle through prompts or use your voice to create custom prompts by holding the Index Trigger button
-   - See live transformation in real-time!
+   - Press **Start button** to open menu
+   - Use **joystick up/down** to navigate menu options:
+     - **Time Travel**: Select historical or future time periods
+     - **Virtual Try-On**: Try on different clothing (stand in front of mirror)
+     - **Biome Transform**: Transport to different locations/environments
+     - **Video Game Style**: Apply video game aesthetics
+     - **Custom Prompt**: Type your own transformation ideas
+   - Use **right trigger** to confirm selections
+   - Use **left trigger** to go back
+   - See live AI transformations in real-time!
 
-## 🎤 Voice Control Setup
+## 📖 Documentation
 
-**Quick Setup**:
-1. Create free [wit.ai](https://wit.ai) account → Create New App
-2. Go to Management → Settings → Copy Server & Client Access Tokens
-3. Paste tokens into Unity's **customNLP asset** → Hold Index Trigger and speak custom prompts!
+Comprehensive guides available in the [Documentation](Documentation/) folder:
 
-**Note**: Wit.ai is used exclusively for voice-to-text conversion. No additional training or configuration of your Wit.ai app is required.
+- **[Complete Setup Guide](Documentation/COMPLETE_SETUP_GUIDE.md)** - Step-by-step Unity setup for absolute beginners (21K+ words)
+- **[Features Guide](Documentation/FEATURES_GUIDE.md)** - Detailed documentation of all features (17K+ words)
+- **[Automation vs Manual](Documentation/AUTOMATION_VS_MANUAL.md)** - Development workflow comparison (17K+ words)
+
+**Quick Links:**
+- 🚀 New to Unity? Start here: [Complete Setup Guide](Documentation/COMPLETE_SETUP_GUIDE.md)
+- 🎮 Want to know what the app can do? Read: [Features Guide](Documentation/FEATURES_GUIDE.md)
+- 🤖 Setting up CI/CD? Check out: [Automation Guide](Documentation/AUTOMATION_VS_MANUAL.md)
 
 ## 📦 Package Dependencies
 
