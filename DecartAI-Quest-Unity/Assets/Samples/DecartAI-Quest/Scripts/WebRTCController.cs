@@ -105,21 +105,14 @@ namespace QuestCameraKit.WebRTC
                 return;
             }
 
-            HandleInput();
+            // Note: Input handling is now managed by MenuController and feature controllers
+            // This allows for proper navigation scheme:
+            // - Left trigger: go back
+            // - Right trigger: confirm
+            // - Joystick up/down: navigate menu options
+            // - Hamburger button: hide/show menu
+            
             SendQueuedPrompts();
-        }
-
-        private void HandleInput()
-        {
-            if (OVRInput.GetDown(OVRInput.Button.One))
-            {
-                webRtcConnection.SendNextPrompt(true);
-            }
-
-            if (OVRInput.GetDown(OVRInput.Button.Two))
-            {
-                webRtcConnection.SendNextPrompt(false);
-            }
         }
 
         private void SendQueuedPrompts()
