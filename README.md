@@ -27,11 +27,27 @@ Developed by Decart AI, this Unity application demonstrates real-time AI-powered
 
 ## ✨ Features
 
+### Core Features
 - 🎥 **Real-time Camera Capture** - Direct access to Quest 3 passthrough cameras
-- 🤖 **Dual AI Models** - Mirage (61 world transformations) and Lucy (15 person transformations) with unlimited custom voice descriptions
+- 🤖 **Dual AI Models** - Mirage (environment transformations) and Lucy (person transformations)
 - ⚡ **Ultra-low Latency** - ~150-200ms end-to-end processing time
 - 🌐 **WebRTC Streaming** - Efficient VP8 video encoding at 30fps
-- 📱 **VR-Optimized UI** - Native Quest interface with live preview and processed video display
+- 📱 **VR-Optimized UI** - Native Quest interface with joystick navigation
+
+### New Interactive Features
+- 🕰️ **Time Travel** - View your environment in different historical periods or future years (1800-2200)
+- 👔 **Virtual Try-On** - Stand in front of a mirror and try on 15 different clothing styles
+- 🌍 **Biome Transformation** - Transform your room into 18 different countries/environments
+- 🎮 **Video Game Style** - See your world as 20 popular video game aesthetics
+- ✍️ **Custom Prompt** - Type your own transformation ideas using Meta keyboard
+
+### Navigation Scheme
+- **Left Trigger**: Go back to previous menu
+- **Right Trigger**: Confirm selection / Apply transformation  
+- **Joystick Up/Down**: Navigate through menu options
+- **Hamburger Button**: Hide or show the menu
+- **Y Button**: Open keyboard (Custom Prompt)
+- **X Button**: Clear text (Custom Prompt)
 
 ## 🚀 Quick Start
 
@@ -71,18 +87,41 @@ This project showcases Decart's real-time video-to-video AI transformation syste
    ```
 
 6. **Build for Quest**
-   - Switch platform to Android (File → Build Settings → Android → Switch Platform)
-   - Configure build settings for Quest 3
-   - Open Edit → Project Settings → Meta XR and resolve configuration issues:
-     - In Outstanding Issues: Fix all issues EXCEPT "Hand Tracking must be enabled in OVRManager when using its Building Block" and "When Using Passthrough Building Block as an underlay it's required to set the camera background to transparent" (keep these unfixed)
-     - In Recommended Items: Fix all recommendations EXCEPT "Use Low Overhead Mode" and "Hand tracking support is set to 'Controllers Only', hand tracking will not work in this mode" (keep these unfixed)
-   - Build and install APK to headset (File → Build Settings → Build)
+   - **Option 1: Automated Build** (Recommended)
+     ```bash
+     # Make scripts executable (first time only)
+     chmod +x scripts/*.sh
+     
+     # Build and deploy in one command
+     ./scripts/build-and-deploy.sh
+     
+     # Or separately:
+     ./scripts/build.sh      # Build APK
+     ./scripts/deploy.sh     # Deploy to Quest
+     ```
+   
+   - **Option 2: Manual Build** (Traditional)
+     - Switch platform to Android (File → Build Settings → Android → Switch Platform)
+     - Configure build settings for Quest 3
+     - Open Edit → Project Settings → Meta XR and resolve configuration issues:
+       - In Outstanding Issues: Fix all issues EXCEPT "Hand Tracking must be enabled in OVRManager when using its Building Block" and "When Using Passthrough Building Block as an underlay it's required to set the camera background to transparent" (keep these unfixed)
+       - In Recommended Items: Fix all recommendations EXCEPT "Use Low Overhead Mode" and "Hand tracking support is set to 'Controllers Only', hand tracking will not work in this mode" (keep these unfixed)
+     - Build and install APK to headset (File → Build Settings → Build)
 
-7. **Launch & Enjoy**
+7. **Launch & Use the App**
    - Grant camera permissions when prompted
-   - Select AI model: Press A for Mirage (world transformations) or B for Lucy (person transformations)
-   - Use A/B buttons to cycle through prompts or use your voice to create custom prompts by holding the Index Trigger button
-   - See live transformation in real-time!
+   - Wait for camera initialization (5-10 seconds)
+   - Menu appears automatically - use joystick navigation
+   
+   **Using the Features:**
+   - **Main Navigation**: Hamburger button shows/hides menu, Joystick up/down to navigate, Right trigger to select, Left trigger to go back
+   - **Time Travel**: Select year (1800-2200), apply to see environment in that era
+   - **Virtual Try-On**: Stand in front of mirror, browse 15 clothing styles, try on outfits
+   - **Biome Transformation**: Choose from 18 world environments to transform your room
+   - **Video Game Style**: Apply 20 different video game aesthetics to your view
+   - **Custom Prompt**: Press Y button, type your own ideas, press right trigger to apply
+   
+   See full feature details in [Documentation/FEATURES.md](Documentation/FEATURES.md)
 
 ## 🎤 Voice Control Setup
 
@@ -167,18 +206,48 @@ Quest Camera → Unity WebRTC → Decart AI → Processed Video → Quest Displa
 
 ## 📖 Documentation
 
-For detailed technical documentation, see the Wiki
+### For Users
+- **[Complete Beginner's Guide](Documentation/COMPLETE_GUIDE.md)** - Step-by-step instructions from clone to production for complete beginners
+- **[Features Overview](Documentation/FEATURES.md)** - Detailed description of all 5 features and how to use them
+- **[Automation vs Manual](Documentation/AUTOMATION_VS_MANUAL.md)** - Comparison of automated and manual build/deploy processes
+
+### For Developers
+- **[Build Scripts](scripts/README.md)** - Automated build and deployment scripts documentation
+- **[Coding Standards](CODING_STANDARDS.md)** - Code conventions and best practices
+- **[Contributing](CONTRIBUTING.md)** - How to contribute to the project
+
+### Quick Links
+- 🎮 **Using the App**: See [Features Guide](Documentation/FEATURES.md)
+- 🔨 **Building**: See [Complete Guide](Documentation/COMPLETE_GUIDE.md) or use `./scripts/build.sh`
+- 🚀 **Deploying**: See [Complete Guide](Documentation/COMPLETE_GUIDE.md) or use `./scripts/deploy.sh`
+- 🤖 **Automating**: See [Automation Guide](Documentation/AUTOMATION_VS_MANUAL.md)
 
 ## 🛠️ Development
 
 ### Key Components
 
-- `WebRTCController.cs` - Main application controller and UI management
-- `WebRTCConnection.cs` - Unity WebRTC lifecycle, video streaming, and model selection
-- `WebRTCManager.cs` - Core WebRTC logic with dual AI prompt libraries (61 Mirage + 15 Lucy)
+**Main Controllers:**
+- `MenuController.cs` - Main menu system with joystick navigation
+- `WebRTCController.cs` - WebRTC integration and prompt management
+- `WebRTCConnection.cs` - Unity WebRTC lifecycle and video streaming
+- `WebRTCManager.cs` - Core WebRTC logic and AI communication
+
+**Feature Controllers:**
+- `TimeTravelController.cs` - Time period transformation (1800-2200)
+- `VirtualTryOnController.cs` - Virtual clothing try-on system
+- `BiomeController.cs` - Environment/biome transformations
+- `VideoGameController.cs` - Video game aesthetic transformations
+- `CustomPromptController.cs` - Custom user prompt input with keyboard
+
+**Camera & Utilities:**
 - `WebCamTextureManager.cs` - Quest camera integration via Unity API
 - `PassthroughCameraUtils.cs` - Android Camera2 API integration
 - `PassthroughCameraPermissions.cs` - Runtime permission management
+
+**Build Tools:**
+- `BuildAutomation.cs` - Automated Unity build system
+- `build.sh` - Shell script for automated builds
+- `deploy.sh` - Shell script for automated deployment
 
 ### Build Configuration
 
