@@ -8,6 +8,10 @@ using TMPro;
 
 namespace QuestCameraKit.WebRTC
 {
+    /// <summary>
+    /// Main WebRTC controller - manages camera feed and video processing
+    /// Voice features removed as per requirements
+    /// </summary>
     public class WebRTCController : MonoBehaviour
     {
         [Tooltip("UI RawImage where the local passthrough camera feed will be displayed.")]
@@ -21,6 +25,9 @@ namespace QuestCameraKit.WebRTC
 
         [Tooltip("Manager for controlling the passthrough WebCamTexture on Quest devices.")]
         [SerializeField] private WebCamTextureManager passthroughCameraManager;
+        
+        [Tooltip("Reference to the MenuManager for the new menu system.")]
+        [SerializeField] private MenuManager menuManager;
 
         private bool _videoReceivedAndReady;
         private WebCamTexture _webcamTexture;
@@ -36,6 +43,11 @@ namespace QuestCameraKit.WebRTC
             if (webRtcConnection == null)
             {
                 webRtcConnection = FindFirstObjectByType<WebRTCConnection>();
+            }
+            
+            if (menuManager == null)
+            {
+                menuManager = FindFirstObjectByType<MenuManager>();
             }
 
             if (passthroughCameraManager == null || webRtcConnection == null)
@@ -64,7 +76,7 @@ namespace QuestCameraKit.WebRTC
 
             webRtcConnection.VideoTransmissionReceived.AddListener(OnVideoReceived);
             webRtcConnection.PromptNameUpdated.AddListener(UpdatePromptName);
-            Debug.Log("WebRTCController: Initialized successfully.");
+            Debug.Log("WebRTCController: Initialized successfully (Voice features disabled).");
         }
 
         private void OnDestroy()
@@ -105,22 +117,17 @@ namespace QuestCameraKit.WebRTC
                 return;
             }
 
-            HandleInput();
+            // Legacy button handling removed - now handled by MenuManager
+            // Old A/B button navigation is replaced with new navigation scheme
             SendQueuedPrompts();
         }
 
-        private void HandleInput()
-        {
-            if (OVRInput.GetDown(OVRInput.Button.One))
-            {
-                webRtcConnection.SendNextPrompt(true);
-            }
-
-            if (OVRInput.GetDown(OVRInput.Button.Two))
-            {
-                webRtcConnection.SendNextPrompt(false);
-            }
-        }
+        // Legacy input handling removed - navigation now handled by MenuManager
+        // New navigation scheme:
+        // - Left Trigger: Back
+        // - Right Trigger: Confirm
+        // - Joystick Up/Down: Navigate
+        // - Hamburger Button: Hide/Show Menu
 
         private void SendQueuedPrompts()
         {
