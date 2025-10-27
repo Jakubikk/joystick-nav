@@ -105,21 +105,8 @@ namespace QuestCameraKit.WebRTC
                 return;
             }
 
-            HandleInput();
+            // Input handling removed - now managed by MenuController and feature-specific controllers
             SendQueuedPrompts();
-        }
-
-        private void HandleInput()
-        {
-            if (OVRInput.GetDown(OVRInput.Button.One))
-            {
-                webRtcConnection.SendNextPrompt(true);
-            }
-
-            if (OVRInput.GetDown(OVRInput.Button.Two))
-            {
-                webRtcConnection.SendNextPrompt(false);
-            }
         }
 
         private void SendQueuedPrompts()
